@@ -1,0 +1,65 @@
+#!/usr/bin/env python3
+
+"""
+Created on 30 Nov 2025
+
+@author: Bruno Beloff (bbeloff@me.com)
+
+source repo: mrcs_web
+
+DESCRIPTION
+A launcher for the Uvicorn ASGI web server
+
+SYNOPSIS
+mrcs_uvicorn [-h] [-t] [-i INDENT] [-v] [--version] [-r]
+
+EXAMPLES
+mrcs_uvicorn -t -v -r
+
+RESOURCES
+"""
+
+import logging
+import os
+import sys
+import uvicorn
+
+from mrcs_api.cli.args.uvicorn_args import UvicornArgs
+
+from mrcs_core.sys.environment import Environment
+from mrcs_core.sys.logging import Logging
+
+
+# --------------------------------------------------------------------------------------------------------------------
+
+if __name__ == '__main__':
+
+    publisher = None
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    args = UvicornArgs('a launcher for the Uvicorn ASGI web server')
+
+    Logging.config('mrcs_uvicorn', level=logging.INFO)
+    logger = Logging.getLogger()
+    logger.info(f'args: {args}')
+    logger.info(f'mode: {args.mode.value}')
+
+    Environment.set(args.mode)
+
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    pieces = __file__.split(os.sep)
+    watched = os.sep.join(pieces[:-3])
+
+    if args.reload:
+        print(f'watched: {watched}')
+
+    try:
+        uvicorn.run('mrcs_web.app.main:app', reload=args.reload, reload_dirs=[watched])
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    except KeyboardInterrupt:
+        print(file=sys.stderr)
