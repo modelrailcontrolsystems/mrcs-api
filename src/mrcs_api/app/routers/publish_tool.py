@@ -19,15 +19,16 @@ from mrcs_core.sys.logging import Logging
 
 env = Environment.get()
 
-Logging.config(env.log_name, level=env.log_level)
+Logging.config(env.log_name + ': publish_tool', level=env.log_level)
 logger = Logging.getLogger()
 
-logger.info(f'publish_tool starting')
+logger.info(f'starting')
 
 router = APIRouter()
 
 publisher = Publisher.construct_pub(env.ops_mode.value.mq_mode)
 publisher.connect()
+logger.info(f'publisher:{publisher}')
 
 
 # --------------------------------------------------------------------------------------------------------------------
