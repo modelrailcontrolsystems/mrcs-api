@@ -25,10 +25,10 @@ from mrcs_core.sys.logging import Logging
 
 env = Environment.get()
 
-Logging.config(env.log_name, level=env.log_level)
+Logging.config(env.log_name + ': user_admin', level=env.log_level)
 logger = Logging.getLogger()
 
-logger.info('user_admin starting')
+logger.info('starting')
 
 router = APIRouter()
 
@@ -97,4 +97,4 @@ async def delete(uid: str) -> None:
     except RuntimeError as ex:
         raise HTTPException(status_code=409, detail=f'delete: {ex}')
 
-
+# TODO: log in (put? patch?)

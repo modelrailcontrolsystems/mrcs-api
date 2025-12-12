@@ -30,10 +30,10 @@ from mrcs_core.sys.logging import Logging
 # --------------------------------------------------------------------------------------------------------------------
 
 env = Environment.get()
-Logging.config(env.log_name, level=env.log_level)
+Logging.config(env.log_name + ': main', level=env.log_level)
 
 logger = Logging.getLogger()
-logger.info(f'main starting: {env}')
+logger.info(f'starting: {env}')
 
 DBClient.set_client_db_mode(env.ops_mode.value.db_mode)
 

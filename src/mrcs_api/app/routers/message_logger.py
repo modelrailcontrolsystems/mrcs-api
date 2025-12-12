@@ -26,10 +26,10 @@ from mrcs_core.sys.logging import Logging
 
 env = Environment.get()
 
-Logging.config(env.log_name, level=env.log_level)
+Logging.config(env.log_name + ': message_logger', level=env.log_level)
 logger = Logging.getLogger()
 
-logger.info(f'message_logger starting')
+logger.info(f'starting')
 
 router = APIRouter()
 

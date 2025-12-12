@@ -5,7 +5,7 @@ Created on 30 Nov 2025
 
 @author: Bruno Beloff (bbeloff@me.com)
 
-source repo: mrcs_web
+source repo: mrcs_api
 
 DESCRIPTION
 A launcher for the Uvicorn ASGI web server
@@ -57,7 +57,7 @@ if __name__ == '__main__':
         print(f'watched: {watched}')
 
     try:
-        uvicorn.run('mrcs_web.app.main:app', reload=args.reload, reload_dirs=[watched])
+        uvicorn.run('mrcs_api.app.main:app', reload=args.reload, reload_dirs=[watched])
 
     # ----------------------------------------------------------------------------------------------------------------
 
