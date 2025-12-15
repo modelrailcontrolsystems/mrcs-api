@@ -17,7 +17,7 @@ https://fastapi.tiangolo.com/advanced/events/#lifespan
 
 from fastapi import FastAPI     # Depends,
 
-from mrcs_api.app.routers import message_logger, publish_tool, user_admin
+from mrcs_api.app.routers import message_logger, publish_tool, session_controller, user_admin
 
 from mrcs_core.db.dbclient import DBClient
 from mrcs_core.sys.environment import Environment
@@ -44,8 +44,9 @@ DBClient.set_client_db_mode(env.ops_mode.value.db_mode)
 app = FastAPI()     # dependencies=[Depends(get_query_token)]
 
 app.include_router(message_logger.router)
-app.include_router(user_admin.router)
 app.include_router(publish_tool.router)
+app.include_router(session_controller.router)
+app.include_router(user_admin.router)
 
 # app.include_router(
 #     admin.router,

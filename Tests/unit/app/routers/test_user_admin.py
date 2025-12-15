@@ -14,34 +14,47 @@ import unittest
 from fastapi.testclient import TestClient
 
 from mrcs_api.app.main import app
+from mrcs_api.models.token import JWT
 
 from mrcs_core.admin.user.user import User
 from mrcs_core.data.json import JSONify
 from mrcs_core.db.dbclient import DBClient
 
-from setup import Setup
+from mrcs_api.test_setup import TestSetup
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
 class TestUserAdmin(unittest.TestCase):
 
+    token: JWT = None
+
     @classmethod
     def setUpClass(cls):
-        Setup()
+        TestSetup.dbSetup()
 
 
     def setUp(self):
         self.__setup_db()
         self.__client = TestClient(app)
 
+        if self.token is None:
+            self.token = self.__authorise()
+
 
     def tearDown(self):
         DBClient.kill_all()
 
 
-    def test_find_all(self):
+    def test_find_all_fail(self):
         response = self.__client.get('/user/find_all/')
+        assert response.status_code == 401
+
+
+    def test_find_all(self):
+        headers = self.token.as_header()
+        response = self.__client.get('/user/find_all/', headers=headers)
+
         assert response.status_code == 200
         jdict = response.json()
         assert len(jdict) == 2
@@ -51,7 +64,8 @@ class TestUserAdmin(unittest.TestCase):
 
 
     def test_find(self):
-        response = self.__client.get('/user/find_all/')
+        headers = self.token.as_header()
+        response = self.__client.get('/user/find_all/', headers=headers)
         jdict = response.json()
         user = User.construct_from_jdict(jdict[0])
 
@@ -156,3 +170,10 @@ class TestUserAdmin(unittest.TestCase):
         DBClient.kill_all()
 
         return obj1, obj2
+
+
+    def __authorise(self) -> JWT:
+        form = {'grant_type': 'password', 'username': 'bbeloff1@me.com', 'password': 'password'}
+        response = self.__client.post('/session/', data=form)
+
+        return JWT.construct_from_jdict(json.loads(response.content))
