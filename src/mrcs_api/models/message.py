@@ -30,6 +30,7 @@ class MessageRecordModel(BaseModel):
 # --------------------------------------------------------------------------------------------------------------------
 
 class APIMessage(Message):
+    """A structured representation of a message"""
 
     @classmethod
     def construct_from_payload(cls, payload: MessageModel):
