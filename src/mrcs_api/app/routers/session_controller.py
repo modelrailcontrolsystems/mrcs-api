@@ -15,7 +15,7 @@ from fastapi import APIRouter, Depends
 from jwt import InvalidTokenError
 from pydantic import ValidationError
 
-from mrcs_api.exceptions import ValidationException, ScopeException, InvalidCredentialsException
+from mrcs_api.exceptions import Validation401Exception, Scope401Exception, InvalidCredentials400Exception
 from mrcs_api.models.session import Scope
 from mrcs_api.models.token import TokenModel, JWT, TokenData
 
@@ -37,7 +37,7 @@ DBClient.set_client_db_mode(env.ops_mode.value.db_mode)
 logger.info(f'starting - client_db_mode:{DBClient.client_db_mode()}')
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl="session",
+    tokenUrl='session',
     scopes=Scope.as_dict(),
 )
 
@@ -46,20 +46,20 @@ router = APIRouter()
 
 # --------------------------------------------------------------------------------------------------------------------
 
-async def session_user(required: SecurityScopes, encoded_token: Annotated[str, Depends(oauth2_scheme)]):
-    bearer = f'Bearer scope="{required.scope_str}"' if required.scopes else 'Bearer'
-
+async def session_user(required: SecurityScopes, encoded_token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     try:
         token = TokenData.decode(encoded_token)
     except (InvalidTokenError, ValidationError, ValueError):
-        raise ValidationException(bearer)
+        raise Validation401Exception(required.scope_str)
 
     user = User.find(token.sub)
     if not user:
-        raise InvalidCredentialsException()
+        raise InvalidCredentials400Exception()
 
-    if not set(required.scopes).issubset(token.scopes):        # or use the user's scopes
-        raise ScopeException(bearer)
+    # TODO: check if user is enabled - use enabled=false to log out?
+
+    if not set(required.scopes).issubset(token.scopes):        # TODO: user user's instead of token's scopes?
+        raise Scope401Exception(f'required:{required.scopes} presented:{token.scopes}')
 
     return user
 
@@ -68,13 +68,8 @@ async def session_user(required: SecurityScopes, encoded_token: Annotated[str, D
 
 @router.post('/session', status_code=201, tags=['session'])
 async def create(form: Annotated[OAuth2PasswordRequestForm, Depends()]) -> TokenModel:
-    logger.info(f'--> create - username:{form.username} password:{form.password}')
-
     user = User.log_in(form.username, form.password)
     if not user:
-        raise InvalidCredentialsException()
+        raise InvalidCredentials400Exception()
 
-    encoded_token = JWT.construct(user).encode()
-
-    logger.info(f'<-- create - encoded_token:{encoded_token}')
-    return encoded_token
+    return JWT.construct(user).encode()

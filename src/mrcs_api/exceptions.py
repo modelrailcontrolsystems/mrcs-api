@@ -12,7 +12,21 @@ from fastapi import status
 
 # ----------------------------------------------------------------------------------------------------------------
 
-class ValidationException(HTTPException):
+class InvalidCredentials400Exception(HTTPException):
+    """
+    Security exception: invalid credentials
+    """
+
+    def __init__(self):
+        super().__init__(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='incorrect username or password',
+        )
+
+
+# ----------------------------------------------------------------------------------------------------------------
+
+class Validation401Exception(HTTPException):
     """
      Security ValidationException: no username or no user
     """
@@ -27,7 +41,7 @@ class ValidationException(HTTPException):
 
 # ----------------------------------------------------------------------------------------------------------------
 
-class ScopeException(HTTPException):
+class Scope401Exception(HTTPException):
     """
     Security ScopeException: user or token scopes do not include path scope
     """
@@ -42,7 +56,7 @@ class ScopeException(HTTPException):
 
 # ----------------------------------------------------------------------------------------------------------------
 
-class InactiveUserException(HTTPException):
+class InactiveUser401Exception(HTTPException):
     """
     Security exception: user is not enabled
     """
@@ -51,18 +65,4 @@ class InactiveUserException(HTTPException):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='inactive user',
-        )
-
-
-# ----------------------------------------------------------------------------------------------------------------
-
-class InvalidCredentialsException(HTTPException):
-    """
-    Security exception: invalid credentials
-    """
-
-    def __init__(self):
-        super().__init__(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='incorrect username or password',
         )
