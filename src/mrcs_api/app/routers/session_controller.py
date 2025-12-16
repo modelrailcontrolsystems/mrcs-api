@@ -46,7 +46,7 @@ router = APIRouter()
 
 # --------------------------------------------------------------------------------------------------------------------
 
-async def session_user(required: SecurityScopes, encoded_token: Annotated[str, Depends(oauth2_scheme)]):
+async def session_user(required: SecurityScopes, encoded_token: Annotated[str, Depends(oauth2_scheme)]) -> User:
     try:
         token = TokenData.decode(encoded_token)
     except (InvalidTokenError, ValidationError, ValueError):
