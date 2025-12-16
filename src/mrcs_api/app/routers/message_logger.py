@@ -44,7 +44,7 @@ AuthorizedUser = Annotated[User, Security(session_user, scopes=['OBSERVE'])]
 
 @router.get('/mlg/latest', tags=['messages'])
 async def latest_messages(user: AuthorizedUser, limit: int = 10) -> List[MessageRecordModel]:
-    logger.info(f'latest_messages - user:{user} limit:{limit}')
+    logger.info(f'latest_messages - user:{user.uid} limit:{limit}')
     records = list(recorder.find_latest(limit))
 
     return JSONify.as_jdict(records)

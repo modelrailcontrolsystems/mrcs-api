@@ -41,7 +41,7 @@ AuthorizedUser = Annotated[User, Security(session_user, scopes=['OPERATE'])]
 
 @router.post('/tst/publish', tags=['messages'])
 async def publish(user: AuthorizedUser, payload: MessageModel):
-    logger.info(f'publish - user:{user} payload:{payload}')
+    logger.info(f'publish - user:{user.uid} payload:{payload}')
 
     try:
         message = APIMessage.construct_from_payload(payload)
