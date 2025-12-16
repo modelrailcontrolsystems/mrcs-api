@@ -10,12 +10,14 @@ http://127.0.0.1:8000/mlg/latest
 https://fastapi.tiangolo.com/tutorial/bigger-applications/#an-example-file-structure
 """
 
-from typing import List
+from typing import List, Annotated
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Security
 
+from mrcs_api.app.routers.session_controller import session_user
 from mrcs_api.models.message import MessageRecordModel
 
+from mrcs_core.admin.user.user import User
 from mrcs_core.data.json import JSONify
 from mrcs_core.operations.recorder.message_recorder import MessageRecorder
 from mrcs_core.sys.environment import Environment
@@ -35,12 +37,14 @@ router = APIRouter()
 
 recorder = MessageRecorder.construct(env.ops_mode)
 
+AuthorizedUser = Annotated[User, Security(session_user, scopes=['OBSERVE'])]
+
 
 # --------------------------------------------------------------------------------------------------------------------
 
 @router.get('/mlg/latest', tags=['messages'])
-async def latest_messages(limit: int = 10) -> List[MessageRecordModel]:
-    logger.info(f'latest_messages: {limit}')
+async def latest_messages(user: AuthorizedUser, limit: int = 10) -> List[MessageRecordModel]:
+    logger.info(f'latest_messages - user:{user} limit:{limit}')
     records = list(recorder.find_latest(limit))
 
     return JSONify.as_jdict(records)

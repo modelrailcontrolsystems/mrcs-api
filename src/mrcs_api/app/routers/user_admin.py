@@ -33,20 +33,22 @@ logger.info('starting')
 
 router = APIRouter()
 
+AuthorizedUser = Annotated[User, Security(session_user, scopes=['USERS'])]
+
 
 # --------------------------------------------------------------------------------------------------------------------
 
 @router.get('/user/find_all', tags=['users'])
-async def find_all(user: Annotated[User, Security(session_user, scopes=['USERS'])]) -> List[UserModel]:
-    logger.info(f'--> find_all - user:{user}')
+async def find_all(user: AuthorizedUser) -> List[UserModel]:
+    logger.info(f'find_all - user:{user.email}')
     users = list(User.find_all())
 
     return JSONify.as_jdict(users)
 
 
 @router.get('/user/find/{uid}', tags=['users'])
-async def find(uid: str) -> UserModel | None:       # TODO: replace with find self
-    logger.info(f'find: {uid}')
+async def find_user(user: AuthorizedUser, uid: str) -> UserModel | None:
+    logger.info(f'find_user - user:{user.email}: uid:{uid}')
     user = User.find(uid)
 
     if not user:
@@ -55,9 +57,16 @@ async def find(uid: str) -> UserModel | None:       # TODO: replace with find se
     return JSONify.as_jdict(user)
 
 
+@router.get('/user/self', tags=['users'])
+async def find_self(user: AuthorizedUser) -> UserModel | None:
+    logger.info(f'find_self - user: {user.email}')
+
+    return JSONify.as_jdict(user)
+
+
 @router.post('/user/create', status_code=201, tags=['users'])
-async def create(payload: UserCreateModel) -> UserModel:
-    logger.info(f'create: {payload}')
+async def create(user: AuthorizedUser, payload: UserCreateModel) -> UserModel:
+    logger.info(f'create - user:{user} payload:{payload}')
 
     try:
         user = APIUser.construct_from_create_payload(payload)
@@ -73,8 +82,8 @@ async def create(payload: UserCreateModel) -> UserModel:
 
 
 @router.put('/user/update', tags=['users'])
-async def update(payload: UserUpdateModel) -> None:
-    logger.info(f'update: {payload}')
+async def update(user: AuthorizedUser, payload: UserUpdateModel) -> None:
+    logger.info(f'update - user:{user} payload:{payload}')
 
     try:
         user = APIUser.construct_from_update_payload(payload)
@@ -88,8 +97,8 @@ async def update(payload: UserUpdateModel) -> None:
 
 
 @router.delete('/user/delete/{uid}', tags=['users'])
-async def delete(uid: str) -> None:
-    logger.info(f'delete: {uid}')
+async def delete(user: AuthorizedUser, uid: str) -> None:
+    logger.info(f'delete - user:{user}: uid:{uid}')
 
     try:
         User.delete(uid)
