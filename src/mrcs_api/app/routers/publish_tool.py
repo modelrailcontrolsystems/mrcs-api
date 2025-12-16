@@ -34,13 +34,13 @@ publisher = Publisher.construct_pub(env.ops_mode.value.mq_mode)
 publisher.connect()
 logger.info(f'publisher:{publisher}')
 
-AuthorizedUser = Annotated[User, Security(session_user, scopes=['OPERATE'])]
+AuthorizeOperator = Annotated[User, Security(session_user, scopes=['OPERATE'])]
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
 @router.post('/tst/publish', tags=['messages'])
-async def publish(user: AuthorizedUser, payload: MessageModel):
+async def publish(user: AuthorizeOperator, payload: MessageModel):
     logger.info(f'publish - user:{user.uid} payload:{payload}')
 
     try:

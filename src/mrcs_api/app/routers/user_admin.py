@@ -33,13 +33,14 @@ logger.info('starting')
 
 router = APIRouter()
 
-AuthorizedUser = Annotated[User, Security(session_user, scopes=['USERS'])]
+AuthorizedAdmin = Annotated[User, Security(session_user, scopes=['USERS'])]
+AuthorizedUser = Annotated[User, Security(session_user, scopes=[])]
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
 @router.get('/user/find_all', tags=['users'])
-async def find_all(user: AuthorizedUser) -> List[UserModel]:
+async def find_all(user: AuthorizedAdmin) -> List[UserModel]:
     logger.info(f'find_all - user:{user.uid}')
     users = list(User.find_all())
 
@@ -47,7 +48,7 @@ async def find_all(user: AuthorizedUser) -> List[UserModel]:
 
 
 @router.get('/user/find/{uid}', tags=['users'])
-async def find_user(user: AuthorizedUser, uid: str) -> UserModel | None:
+async def find_user(user: AuthorizedAdmin, uid: str) -> UserModel | None:
     logger.info(f'find_user - user:{user.uid}: uid:{uid}')
     user = User.find(uid)
 
@@ -65,7 +66,7 @@ async def find_self(user: AuthorizedUser) -> UserModel | None:
 
 
 @router.post('/user/create', status_code=201, tags=['users'])
-async def create(user: AuthorizedUser, payload: UserCreateModel) -> UserModel:
+async def create(user: AuthorizedAdmin, payload: UserCreateModel) -> UserModel:
     logger.info(f'create - user:{user.uid} payload:{payload}')
 
     try:
@@ -82,7 +83,7 @@ async def create(user: AuthorizedUser, payload: UserCreateModel) -> UserModel:
 
 
 @router.put('/user/update', tags=['users'])
-async def update(user: AuthorizedUser, payload: UserUpdateModel) -> None:
+async def update(user: AuthorizedAdmin, payload: UserUpdateModel) -> None:
     logger.info(f'update - user:{user.uid} payload:{payload}')
 
     try:
@@ -97,7 +98,7 @@ async def update(user: AuthorizedUser, payload: UserUpdateModel) -> None:
 
 
 @router.delete('/user/delete/{uid}', tags=['users'])
-async def delete(user: AuthorizedUser, uid: str) -> None:
+async def delete(user: AuthorizedAdmin, uid: str) -> None:
     logger.info(f'delete - user:{user.uid}: uid:{uid}')
 
     try:
