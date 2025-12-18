@@ -14,7 +14,7 @@ from collections import OrderedDict
 from datetime import timedelta, datetime, timezone
 from pydantic import BaseModel
 
-from mrcs_api.models.session import Scope
+from mrcs_api.app.security.scope import Scope
 
 from mrcs_core.admin.user.user import User
 from mrcs_core.data.json import JSONable
@@ -155,7 +155,6 @@ class JWT(object):
 
         scopes = Scope.keys_for_role(user.role)
         expires_delta = timedelta(minutes=AccessToken.ACCESS_TOKEN_EXPIRE_MINUTES) if delta is None else delta
-
         data = TokenData(user.uid, scopes)
         access = AccessToken(data, expires_delta)
 
@@ -174,7 +173,6 @@ class JWT(object):
     def encode(self):
         expiry = datetime.now(timezone.utc) + self.access.expires_delta
         data = self.access.data.as_json(expiry=expiry)
-
         encoded_jwt = jwt.encode(data, TokenData.SECRET_KEY, algorithm=TokenData.ALGORITHM)
 
         return TokenModel(access_token=encoded_jwt, token_type=self.token_type)

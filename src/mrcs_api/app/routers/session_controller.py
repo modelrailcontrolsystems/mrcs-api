@@ -3,6 +3,8 @@ Created on 12 Dec 2025
 
 @author: Bruno Beloff (bbeloff@me.com)
 
+http://127.0.0.1:8000/session
+
 User session API
 
 https://stackoverflow.com/questions/5868786/what-method-should-i-use-for-a-login-authentication-request
@@ -15,8 +17,9 @@ from fastapi import APIRouter, Depends
 from jwt import InvalidTokenError
 from pydantic import ValidationError
 
+from mrcs_api.app.internal.tags import Tags
+from mrcs_api.app.security.scope import ScopeDescription
 from mrcs_api.exceptions import Validation401Exception, Scope401Exception, InvalidCredentials400Exception
-from mrcs_api.models.session import Scope
 from mrcs_api.models.token import TokenModel, JWT, TokenData
 
 from mrcs_core.admin.user.user import User
@@ -38,7 +41,7 @@ logger.info(f'starting - client_db_mode:{DBClient.client_db_mode()}')
 
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl='session',
-    scopes=Scope.as_dict(),
+    scopes=ScopeDescription.as_dict(),
 )
 
 router = APIRouter()
@@ -66,7 +69,7 @@ async def session_user(required: SecurityScopes, encoded_token: Annotated[str, D
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.post('/session', status_code=201, tags=['session'])
+@router.post('/session', status_code=201, tags=[Tags.Session])
 async def create(form: Annotated[OAuth2PasswordRequestForm, Depends()]) -> TokenModel:
     user = User.log_in(form.username, form.password)
     if not user:

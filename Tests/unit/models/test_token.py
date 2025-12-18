@@ -12,7 +12,7 @@ import unittest
 
 from datetime import timedelta
 
-from mrcs_api.models.session import Scope
+from mrcs_api.app.security.scope import Scope
 from mrcs_api.models.token import JWT, TokenData
 
 from mrcs_core.admin.user.user import User
@@ -28,7 +28,7 @@ class TestToken(unittest.TestCase):
         jwt = JWT.construct(user, delta=delta)
 
         assert jwt.access.data.sub == user.uid
-        assert jwt.access.data.scopes == {'OBSERVE', 'OPERATE', 'LAYOUT', 'USERS'}
+        assert jwt.access.data.scopes == {'OBSERVE', 'OPERATE_EQUIPMENT', 'ALTER_LAYOUT', 'MANAGE_USER_ACCOUNTS'}
         assert jwt.access.expires_delta == delta
 
 

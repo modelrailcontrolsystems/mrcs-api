@@ -9,7 +9,7 @@ https://fastapi.tiangolo.com/tutorial/testing/#using-testclient
 
 import unittest
 
-from mrcs_api.models.session import Scope
+from mrcs_api.app.security.scope import Scope, ScopeDescription
 from mrcs_core.admin.user.user import UserRole
 
 
@@ -19,26 +19,26 @@ class TestSession(unittest.TestCase):
 
     def test_list_scopes(self):
         scopes = list(Scope.keys())
-        assert scopes == ['OBSERVE', 'OPERATE', 'LAYOUT', 'USERS']
+        assert scopes == ['OBSERVE', 'OPERATE_EQUIPMENT', 'ALTER_LAYOUT', 'MANAGE_USER_ACCOUNTS']
 
 
     def test_descriptions(self):
-        scopes = Scope.as_dict()
+        scopes = ScopeDescription.as_dict()
         assert scopes['OBSERVE'] == 'Observe all design and operations.'
-        assert scopes['OPERATE'] == 'Operate equipment, observe design.'
-        assert scopes['LAYOUT'] == 'Operate equipment, alter design.'
-        assert scopes['USERS'] == 'Administer user accounts.'
+        assert scopes['OPERATE_EQUIPMENT'] == 'Operate equipment, observe design.'
+        assert scopes['ALTER_LAYOUT'] == 'Operate equipment, alter design.'
+        assert scopes['MANAGE_USER_ACCOUNTS'] == 'Operate equipment, alter design and manage user accounts.'
 
 
     def test_role_mapping(self):
         scopes = Scope.keys_for_role(UserRole.ADMIN)
-        assert scopes == {'OBSERVE', 'OPERATE', 'LAYOUT', 'USERS'}
+        assert scopes == {'OBSERVE', 'OPERATE_EQUIPMENT', 'ALTER_LAYOUT', 'MANAGE_USER_ACCOUNTS'}
 
         scopes = Scope.keys_for_role(UserRole.DESIGNER)
-        assert scopes == {'OBSERVE', 'OPERATE', 'LAYOUT'}
+        assert scopes == {'OBSERVE', 'OPERATE_EQUIPMENT', 'ALTER_LAYOUT'}
 
         scopes = Scope.keys_for_role(UserRole.OPERATOR)
-        assert scopes == {'OBSERVE', 'OPERATE'}
+        assert scopes == {'OBSERVE', 'OPERATE_EQUIPMENT'}
 
         scopes = Scope.keys_for_role(UserRole.OBSERVER)
         assert scopes == {'OBSERVE', }
