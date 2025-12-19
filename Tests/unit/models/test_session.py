@@ -9,7 +9,8 @@ https://fastapi.tiangolo.com/tutorial/testing/#using-testclient
 
 import unittest
 
-from mrcs_api.app.security.scope import Scope, ScopeDescription
+from mrcs_api.security.scope import Scope, ScopeDescription
+
 from mrcs_core.admin.user.user import UserRole
 
 

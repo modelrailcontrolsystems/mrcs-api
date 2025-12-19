@@ -8,7 +8,8 @@ A structured representation of a user - received via the API
 
 from pydantic import BaseModel, ConfigDict
 
-from mrcs_api.app.security.scope import Scope
+from mrcs_api.security.scope import Scope
+
 from mrcs_control.admin.user.user import PersistentUser
 
 from mrcs_core.admin.user.user import UserRole
