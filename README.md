@@ -3,4 +3,6 @@ _Application Programming Interfaces (APIs) for the Model Rail Control Systems (M
 
 ---
 
-requires **[mrcs-core](https://github.com/modelrailcontrolsystems/mrcs-core)**
+Requires MRCS repos:
+* **[mrcs-core](https://github.com/modelrailcontrolsystems/mrcs-core)**
+* **[mrcs-control](https://github.com/modelrailcontrolsystems/mrcs-core)**
