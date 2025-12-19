@@ -19,9 +19,10 @@ from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorised import AuthorisedAdmin, AuthorisedUser
 from mrcs_api.models.user import APIUser, UserCreateModel, UserUpdateModel, UserModel
 
-from mrcs_core.admin.user.user import User
+from mrcs_control.admin.user.user import PersistentUser
+from mrcs_control.sys.environment import Environment
+
 from mrcs_core.data.json import JSONify
-from mrcs_core.sys.environment import Environment
 from mrcs_core.sys.logging import Logging
 
 
@@ -42,7 +43,7 @@ router = APIRouter()
 @router.get('/user/find_all', tags=[Tags.Users])
 async def find_all(user: AuthorisedAdmin) -> List[UserModel]:
     logger.info(f'find_all - user:{user.uid}')
-    users = list(User.find_all())
+    users = list(PersistentUser.find_all())
 
     return JSONify.as_jdict(users)
 
@@ -50,7 +51,7 @@ async def find_all(user: AuthorisedAdmin) -> List[UserModel]:
 @router.get('/user/find/{uid}', tags=[Tags.Users])
 async def find_user(user: AuthorisedAdmin, uid: str) -> UserModel | None:
     logger.info(f'find_user - user:{user.uid}: uid:{uid}')
-    user = User.find(uid)
+    user = PersistentUser.find(uid)
 
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'find: user {uid} not found')
@@ -74,7 +75,7 @@ async def create(user: AuthorisedAdmin, payload: UserCreateModel) -> UserModel:
     except ValueError as ex:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'create: {ex}')
 
-    if User.email_in_use(user.email):
+    if PersistentUser.email_in_use(user.email):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f'create: email {user.email} already in use')
 
     created = user.save(password=payload.password)
@@ -91,7 +92,7 @@ async def update(user: AuthorisedAdmin, payload: UserUpdateModel) -> None:
     except ValueError as ex:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'update: {ex}')
 
-    if not User.exists(user.uid):
+    if not PersistentUser.exists(user.uid):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'update: user {user.uid} not found')
 
     user.save()
@@ -102,6 +103,6 @@ async def delete(user: AuthorisedAdmin, uid: str) -> None:
     logger.info(f'delete - user:{user.uid}: uid:{uid}')
 
     try:
-        User.delete(uid)
+        PersistentUser.delete(uid)
     except RuntimeError as ex:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f'delete: {ex}')

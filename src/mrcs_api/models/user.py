@@ -9,8 +9,9 @@ A structured representation of a user - received via the API
 from pydantic import BaseModel, ConfigDict
 
 from mrcs_api.app.security.scope import Scope
+from mrcs_control.admin.user.user import PersistentUser
 
-from mrcs_core.admin.user.user import User, UserRole
+from mrcs_core.admin.user.user import UserRole
 from mrcs_core.data.iso_datetime import ISODatetime
 
 
@@ -52,7 +53,7 @@ class UserUpdateModel(BaseModel):
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class APIUser(User):
+class APIUser(PersistentUser):
 
     @classmethod
     def construct_from_create_payload(cls, payload: UserCreateModel):

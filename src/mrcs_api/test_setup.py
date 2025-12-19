@@ -6,7 +6,7 @@ Created on 16 Nov 2025
 Set up tests to use the test DB
 """
 
-from mrcs_core.db.dbclient import DBClient, DBMode
+from mrcs_control.db.dbclient import DBClient, DBMode
 
 
 # --------------------------------------------------------------------------------------------------------------------

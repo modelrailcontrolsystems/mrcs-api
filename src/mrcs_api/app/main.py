@@ -19,8 +19,9 @@ from fastapi import FastAPI     # Depends,
 
 from mrcs_api.app.routers import message_logger, publish_tool, session_controller, user_admin
 
-from mrcs_core.db.dbclient import DBClient
-from mrcs_core.sys.environment import Environment
+from mrcs_control.db.dbclient import DBClient
+from mrcs_control.sys.environment import Environment
+
 from mrcs_core.sys.logging import Logging
 
 # from .dependencies import get_query_token, get_token_header
