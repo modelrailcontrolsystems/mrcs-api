@@ -12,8 +12,10 @@ import unittest
 
 from datetime import timedelta
 
-from mrcs_api.models.token import JWT, TokenData
 from mrcs_api.models.user import APIUser
+from mrcs_api.security.token import APIJWT
+
+from mrcs_core.security.token import TokenData
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -23,10 +25,10 @@ class TestToken(unittest.TestCase):
     def test_construct(self):
         user = self.__load_user('saved_user.json')
         delta = timedelta(hours=12)
-        jwt = JWT.construct(user, delta=delta)
+        jwt = APIJWT.construct(user, delta=delta)
 
         assert jwt.access.data.sub == user.uid
-        assert jwt.access.data.scopes == set()
+        assert jwt.access.data.scopes == {'OBSERVE', 'MANAGE_USER_ACCOUNTS', 'OPERATE_EQUIPMENT', 'ALTER_LAYOUT'}
         assert jwt.access.expires_delta == delta
 
 
@@ -35,7 +37,7 @@ class TestToken(unittest.TestCase):
         delta = timedelta(hours=12)
 
         try:
-            JWT.construct(user, delta=delta)
+            APIJWT.construct(user, delta=delta)
         except ValueError as ex:
             assert str(ex) == 'the user must have a valid uid'
 
@@ -43,7 +45,7 @@ class TestToken(unittest.TestCase):
     def test_encoded(self):
         user = self.__load_user('saved_user.json')
         delta = timedelta(hours=12)
-        jwt = JWT.construct(user, delta=delta)
+        jwt = APIJWT.construct(user, delta=delta)
         encoded = jwt.encode()
 
         assert len(encoded.access_token) > 100
@@ -53,12 +55,12 @@ class TestToken(unittest.TestCase):
     def test_decoded(self):
         user = self.__load_user('saved_user.json')
         delta = timedelta(hours=12)
-        jwt = JWT.construct(user, delta=delta)
+        jwt = APIJWT.construct(user, delta=delta)
         encoded = jwt.encode()
         decoded = TokenData.decode(encoded.access_token)
 
         assert decoded.sub == user.uid
-        assert decoded.scopes == set()
+        assert decoded.scopes == {'OBSERVE', 'ALTER_LAYOUT', 'OPERATE_EQUIPMENT', 'MANAGE_USER_ACCOUNTS'}
 
 
     # ----------------------------------------------------------------------------------------------------------------

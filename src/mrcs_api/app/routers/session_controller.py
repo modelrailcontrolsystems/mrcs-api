@@ -18,15 +18,16 @@ from jwt import InvalidTokenError
 from pydantic import ValidationError
 
 from mrcs_api.app.internal.tags import Tags
-from mrcs_api.app.security.scope import ScopeDescription
 from mrcs_api.exceptions import Validation401Exception, Scope401Exception, InvalidCredentials400Exception
-from mrcs_api.models.token import TokenModel, JWT, TokenData
 from mrcs_api.models.user import APIUser
+from mrcs_api.security.token import TokenModel, APIJWT
+from mrcs_api.security.scope import ScopeDescription
 
 from mrcs_control.db.dbclient import DBClient
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.sys.logging import Logging
+from mrcs_core.security.token import TokenData
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -61,6 +62,7 @@ async def session_user(required: SecurityScopes, encoded_token: Annotated[str, D
         raise InvalidCredentials400Exception()
 
     # TODO: check if user is enabled - use isInSession=false to log out?
+    # TODO: (temporary) check if token scopes == user.scopes
 
     if not set(required.scopes).issubset(user.scopes()):
         raise Scope401Exception(f'required:{required.scopes} user:{user.scopes}')
@@ -76,4 +78,4 @@ async def create(form: Annotated[OAuth2PasswordRequestForm, Depends()]) -> Token
     if not user:
         raise InvalidCredentials400Exception()
 
-    return JWT.construct(user).encode()
+    return APIJWT.construct(user).encode()

@@ -12,8 +12,9 @@ from typing import Annotated
 
 from fastapi import Security
 
-from mrcs_api.app.security.scope import Scope
 from mrcs_api.app.routers.session_controller import session_user
+from mrcs_api.security.scope import Scope
+
 from mrcs_core.admin.user.user import User
 
 
