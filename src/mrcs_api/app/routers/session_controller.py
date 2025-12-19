@@ -21,8 +21,8 @@ from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.scope import ScopeDescription
 from mrcs_api.exceptions import Validation401Exception, Scope401Exception, InvalidCredentials400Exception
 from mrcs_api.models.token import TokenModel, JWT, TokenData
+from mrcs_api.models.user import APIUser
 
-from mrcs_core.admin.user.user import User
 from mrcs_core.db.dbclient import DBClient
 from mrcs_core.sys.environment import Environment
 from mrcs_core.sys.logging import Logging
@@ -49,20 +49,20 @@ router = APIRouter()
 
 # --------------------------------------------------------------------------------------------------------------------
 
-async def session_user(required: SecurityScopes, encoded_token: Annotated[str, Depends(oauth2_scheme)]) -> User:
+async def session_user(required: SecurityScopes, encoded_token: Annotated[str, Depends(oauth2_scheme)]) -> APIUser:
     try:
         token = TokenData.decode(encoded_token)
     except (InvalidTokenError, ValidationError, ValueError):
         raise Validation401Exception(required.scope_str)
 
-    user = User.find(token.sub)
+    user = APIUser.find(token.sub)
     if not user:
         raise InvalidCredentials400Exception()
 
-    # TODO: check if user is enabled - use enabled=false to log out?
+    # TODO: check if user is enabled - use isInSession=false to log out?
 
-    if not set(required.scopes).issubset(token.scopes):        # TODO: user user's instead of token's scopes?
-        raise Scope401Exception(f'required:{required.scopes} presented:{token.scopes}')
+    if not set(required.scopes).issubset(user.scopes()):
+        raise Scope401Exception(f'required:{required.scopes} user:{user.scopes}')
 
     return user
 
@@ -71,7 +71,7 @@ async def session_user(required: SecurityScopes, encoded_token: Annotated[str, D
 
 @router.post('/session', status_code=201, tags=[Tags.Session])
 async def create(form: Annotated[OAuth2PasswordRequestForm, Depends()]) -> TokenModel:
-    user = User.log_in(form.username, form.password)
+    user = APIUser.log_in(form.username, form.password)
     if not user:
         raise InvalidCredentials400Exception()
 

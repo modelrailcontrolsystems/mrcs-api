@@ -8,7 +8,10 @@ A structured representation of a user - received via the API
 
 from pydantic import BaseModel, ConfigDict
 
-from mrcs_core.admin.user.user import User
+from mrcs_api.app.security.scope import Scope
+
+from mrcs_core.admin.user.user import User, UserRole
+from mrcs_core.data.iso_datetime import ISODatetime
 
 
 # ----------------------------------------------------------------------------------------------------------------
@@ -59,3 +62,16 @@ class APIUser(User):
     @classmethod
     def construct_from_update_payload(cls, payload: UserUpdateModel):
         return cls.construct_from_jdict(payload.model_dump())
+
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    def __init__(self, uid: str | None, email: str, role: UserRole, must_set_password: bool,
+                 given_name: str, family_name: str, created: ISODatetime | None, latest_login: ISODatetime | None):
+        super().__init__(uid, email, role, must_set_password, given_name, family_name, created, latest_login)
+
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    def scopes(self):
+        return Scope.keys_for_role(self.role)

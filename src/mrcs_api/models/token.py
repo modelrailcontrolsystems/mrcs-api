@@ -14,8 +14,6 @@ from collections import OrderedDict
 from datetime import timedelta, datetime, timezone
 from pydantic import BaseModel
 
-from mrcs_api.app.security.scope import Scope
-
 from mrcs_core.admin.user.user import User
 from mrcs_core.data.json import JSONable
 
@@ -47,8 +45,8 @@ class TokenData(JSONable):
         if username is None:
             raise ValueError('the username may not be None')
 
-        scope: str = payload.get('scope', '')
-        scopes = set(scope.split(' '))
+        scope: str = payload.get('scope')
+        scopes = set(scope.split(' ')) if scope else set()
 
         return cls(username, scopes)
 
@@ -99,7 +97,7 @@ class AccessToken(object):
     The access component of a JWT
     """
 
-    ACCESS_TOKEN_EXPIRE_MINUTES = 30
+    DEFAULT_EXPIRE_MINUTES = 30
 
     # ----------------------------------------------------------------------------------------------------------------
 
@@ -153,9 +151,8 @@ class JWT(object):
         if not user.uid:
             raise ValueError('the user must have a valid uid')
 
-        scopes = Scope.keys_for_role(user.role)
-        expires_delta = timedelta(minutes=AccessToken.ACCESS_TOKEN_EXPIRE_MINUTES) if delta is None else delta
-        data = TokenData(user.uid, scopes)
+        expires_delta = timedelta(minutes=AccessToken.DEFAULT_EXPIRE_MINUTES) if delta is None else delta
+        data = TokenData(user.uid, set())
         access = AccessToken(data, expires_delta)
 
         return cls(access)
