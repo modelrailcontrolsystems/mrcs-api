@@ -44,7 +44,7 @@ class TestSessionController(unittest.TestCase):
         response = self.__client.post('/session/', data=form)
         assert response.status_code == 201
         token = JWT.construct_from_jdict(json.loads(response.content.decode()))
-        assert len(token.access.data) > 200
+        assert len(token.access.data) > 100
 
 
     # ----------------------------------------------------------------------------------------------------------------

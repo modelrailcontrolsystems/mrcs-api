@@ -12,10 +12,8 @@ import unittest
 
 from datetime import timedelta
 
-from mrcs_api.app.security.scope import Scope
 from mrcs_api.models.token import JWT, TokenData
-
-from mrcs_core.admin.user.user import User
+from mrcs_api.models.user import APIUser
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -28,7 +26,7 @@ class TestToken(unittest.TestCase):
         jwt = JWT.construct(user, delta=delta)
 
         assert jwt.access.data.sub == user.uid
-        assert jwt.access.data.scopes == {'OBSERVE', 'OPERATE_EQUIPMENT', 'ALTER_LAYOUT', 'MANAGE_USER_ACCOUNTS'}
+        assert jwt.access.data.scopes == set()
         assert jwt.access.expires_delta == delta
 
 
@@ -48,7 +46,7 @@ class TestToken(unittest.TestCase):
         jwt = JWT.construct(user, delta=delta)
         encoded = jwt.encode()
 
-        assert len(encoded.access_token) > 200
+        assert len(encoded.access_token) > 100
         assert encoded.token_type == 'bearer'
 
 
@@ -60,7 +58,7 @@ class TestToken(unittest.TestCase):
         decoded = TokenData.decode(encoded.access_token)
 
         assert decoded.sub == user.uid
-        assert decoded.scopes == Scope.keys_for_role(user.role)
+        assert decoded.scopes == set()
 
 
     # ----------------------------------------------------------------------------------------------------------------
@@ -71,7 +69,7 @@ class TestToken(unittest.TestCase):
         with open(abs_filename) as fp:
             jdict = json.load(fp)
 
-        return User.construct_from_jdict(jdict)
+        return APIUser.construct_from_jdict(jdict)
 
 
 if __name__ == "__main_":
