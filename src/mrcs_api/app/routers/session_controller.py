@@ -23,8 +23,9 @@ from mrcs_api.exceptions import Validation401Exception, Scope401Exception, Inval
 from mrcs_api.models.token import TokenModel, JWT, TokenData
 from mrcs_api.models.user import APIUser
 
-from mrcs_core.db.dbclient import DBClient
-from mrcs_core.sys.environment import Environment
+from mrcs_control.db.dbclient import DBClient
+from mrcs_control.sys.environment import Environment
+
 from mrcs_core.sys.logging import Logging
 
 

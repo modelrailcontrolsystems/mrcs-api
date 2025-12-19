@@ -6,12 +6,12 @@ Created on 30 Nov 2025
 https://realpython.com/command-line-interfaces-python-argparse/
 """
 
-from mrcs_core.cli.args.core_args import CoreArgs
+from mrcs_control.cli.args.control_args import ControlArgs
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class UvicornArgs(CoreArgs):
+class UvicornArgs(ControlArgs):
     """unix command line handler"""
 
     def __init__(self, description):

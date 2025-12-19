@@ -17,9 +17,11 @@ from mrcs_api.app.main import app
 from mrcs_api.models.token import JWT
 from mrcs_api.test_setup import TestSetup
 
+from mrcs_control.admin.user.user import PersistentUser
+from mrcs_control.db.dbclient import DBClient
+
 from mrcs_core.admin.user.user import User
 from mrcs_core.data.json import JSONify
-from mrcs_core.db.dbclient import DBClient
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -168,18 +170,18 @@ class TestUserAdmin(unittest.TestCase):
 
     @classmethod
     def __setup_db(cls):
-        User.recreate_tables()
+        PersistentUser.recreate_tables()
 
         abs_filename = os.path.join(os.path.dirname(__file__), 'data', 'new_user1.json')
         with open(abs_filename) as fp:
             jdict = json.load(fp)
-        obj1 = User.construct_from_jdict(jdict)
+        obj1 = PersistentUser.construct_from_jdict(jdict)
         obj1 = obj1.save(password='password')
 
         abs_filename = os.path.join(os.path.dirname(__file__), 'data', 'new_user2.json')
         with open(abs_filename) as fp:
             jdict = json.load(fp)
-        obj2 = User.construct_from_jdict(jdict)
+        obj2 = PersistentUser.construct_from_jdict(jdict)
         obj2 = obj2.save(password='password')
 
         DBClient.kill_all()
