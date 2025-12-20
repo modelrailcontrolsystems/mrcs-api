@@ -38,7 +38,7 @@ logger.info(f'publisher:{publisher}')
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.post('/tst/publish', tags=[Tags.Messages])
+@router.post('/tst/publish', status_code=201, tags=[Tags.Messages])
 async def publish(user: AuthorisedOperator, payload: MessageModel):
     logger.info(f'publish - user:{user.uid} payload:{payload}')
 
