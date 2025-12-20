@@ -176,13 +176,13 @@ class TestUserAdmin(unittest.TestCase):
         with open(abs_filename) as fp:
             jdict = json.load(fp)
         obj1 = PersistentUser.construct_from_jdict(jdict)
-        obj1 = obj1.save(password='password')
+        obj1 = obj1.save(password='pass')
 
         abs_filename = os.path.join(os.path.dirname(__file__), 'data', 'new_user2.json')
         with open(abs_filename) as fp:
             jdict = json.load(fp)
         obj2 = PersistentUser.construct_from_jdict(jdict)
-        obj2 = obj2.save(password='password')
+        obj2 = obj2.save(password='pass')
 
         DBClient.kill_all()
 
@@ -190,7 +190,7 @@ class TestUserAdmin(unittest.TestCase):
 
 
     def __authorise(self) -> JWT:
-        form = {'grant_type': 'password', 'username': 'bbeloff1@me.com', 'password': 'password'}
+        form = {'grant_type': 'password', 'username': 'bbeloff1@me.com', 'password': 'pass'}
         response = self.__client.post('/session/', data=form)
 
         return JWT.construct_from_jdict(json.loads(response.content))
