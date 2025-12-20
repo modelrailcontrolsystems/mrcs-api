@@ -97,8 +97,7 @@ async def update(user: AuthorisedAdmin, payload: UserUpdateModel) -> None:
 
     if PersistentUser.email_user(user.email) != user.uid:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail=f'update: email {user.email} in use by another user - '
-                                   f'user.uid:{user.uid} existing:{PersistentUser.email_user(user.email)}')
+                            detail=f'update: email {user.email} in use by another user')
 
     user.save()
 
