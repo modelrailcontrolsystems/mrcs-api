@@ -75,7 +75,7 @@ async def create(user: AuthorisedAdmin, payload: UserCreateModel) -> UserModel:
     except ValueError as ex:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'create: {ex}')
 
-    if PersistentUser.email_in_use(user.email):
+    if PersistentUser.email_user(user.email):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f'create: email {user.email} already in use')
 
     created = user.save(password=payload.password)
@@ -94,6 +94,10 @@ async def update(user: AuthorisedAdmin, payload: UserUpdateModel) -> None:
 
     if not PersistentUser.exists(user.uid):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'update: user {user.uid} not found')
+
+    if PersistentUser.email_user(user.email) != user.uid:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail=f'update: email {user.email} in use by another user')
 
     user.save()
 
