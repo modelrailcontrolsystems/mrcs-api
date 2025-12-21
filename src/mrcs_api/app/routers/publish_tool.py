@@ -11,7 +11,7 @@ Test publisher tool (TST) API
 from fastapi import APIRouter, HTTPException, status
 
 from mrcs_api.app.internal.tags import Tags
-from mrcs_api.app.security.authorised import AuthorisedOperator
+from mrcs_api.app.security.authorisation import AuthorisedOperator
 from mrcs_api.models.message import APIMessage, MessageModel
 
 from mrcs_control.messaging.mqclient import Publisher

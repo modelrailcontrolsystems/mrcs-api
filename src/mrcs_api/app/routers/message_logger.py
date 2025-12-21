@@ -15,7 +15,7 @@ from typing import List
 from fastapi import APIRouter
 
 from mrcs_api.app.internal.tags import Tags
-from mrcs_api.app.security.authorised import AuthorisedObserver
+from mrcs_api.app.security.authorisation import AuthorisedObserver
 from mrcs_api.models.message import MessageRecordModel
 
 from mrcs_control.operations.recorder.message_recorder import MessageRecorder

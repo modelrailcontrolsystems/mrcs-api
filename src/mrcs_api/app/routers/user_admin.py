@@ -16,7 +16,7 @@ from typing import List
 from fastapi import APIRouter, HTTPException, status
 
 from mrcs_api.app.internal.tags import Tags
-from mrcs_api.app.security.authorised import AuthorisedAdmin, AuthorisedUser
+from mrcs_api.app.security.authorisation import AuthorisedAdmin, AuthorisedUser
 from mrcs_api.models.user import APIUser, UserCreateModel, UserUpdateModel, UserModel
 
 from mrcs_control.admin.user.user import PersistentUser

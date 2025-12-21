@@ -10,24 +10,18 @@ User session API
 https://stackoverflow.com/questions/5868786/what-method-should-i-use-for-a-login-authentication-request
 """
 
-from typing import Annotated
-
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm, SecurityScopes
-from fastapi import APIRouter, Depends
-from jwt import InvalidTokenError
-from pydantic import ValidationError
+from fastapi import APIRouter
 
 from mrcs_api.app.internal.tags import Tags
-from mrcs_api.exceptions import Validation401Exception, Scope401Exception, InvalidCredentials400Exception
+from mrcs_api.app.security.authorisation import PasswordRequestForm
+from mrcs_api.exceptions import InvalidCredentials400Exception
 from mrcs_api.models.user import APIUser
 from mrcs_api.security.token import TokenModel, APIJWT
-from mrcs_api.security.scope import ScopeDescription
 
 from mrcs_control.db.dbclient import DBClient
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.sys.logging import Logging
-from mrcs_core.security.token import TokenData
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -41,39 +35,13 @@ DBClient.set_client_db_mode(env.ops_mode.value.db_mode)
 
 logger.info(f'starting - client_db_mode:{DBClient.client_db_mode()}')
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl='session',
-    scopes=ScopeDescription.as_dict(),
-)
-
 router = APIRouter()
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-async def session_user(required: SecurityScopes, encoded_token: Annotated[str, Depends(oauth2_scheme)]) -> APIUser:
-    try:
-        token = TokenData.decode(encoded_token)
-    except (InvalidTokenError, ValidationError, ValueError):
-        raise Validation401Exception(required.scope_str)
-
-    user = APIUser.find(token.sub)
-    if not user:
-        raise InvalidCredentials400Exception()
-
-    # TODO: check if user is enabled - use isInSession=false to log out?
-    # TODO: (temporary) check if token scopes == user.scopes
-
-    if not set(required.scopes).issubset(user.scopes()):
-        raise Scope401Exception(f'required:{required.scopes} user:{user.scopes}')
-
-    return user
-
-
-# --------------------------------------------------------------------------------------------------------------------
-
 @router.post('/session', status_code=201, tags=[Tags.Session])
-async def create(form: Annotated[OAuth2PasswordRequestForm, Depends()]) -> TokenModel:
+async def create(form: PasswordRequestForm) -> TokenModel:
     user = APIUser.log_in(form.username, form.password)
     if not user:
         raise InvalidCredentials400Exception()
