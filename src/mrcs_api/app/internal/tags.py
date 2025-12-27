@@ -18,4 +18,5 @@ from enum import StrEnum
 class Tags(StrEnum):
     Messages = 'Messages'
     Session = 'Session'
+    Time = 'Time'
     Users = 'Users'
