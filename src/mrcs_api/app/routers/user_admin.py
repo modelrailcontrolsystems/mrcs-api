@@ -83,7 +83,7 @@ async def create(user: AuthorisedAdmin, payload: UserCreateModel) -> UserModel:
     return JSONify.as_jdict(created)
 
 
-@router.put('/user/update', tags=[Tags.Users])
+@router.patch('/user/update', tags=[Tags.Users])
 async def update(user: AuthorisedAdmin, payload: UserUpdateModel) -> None:
     logger.info(f'update - user:{user.uid} payload:{payload}')
 
