@@ -25,13 +25,13 @@ from typing import Annotated
 from annotated_types import Gt, Le, Ge
 from pydantic import BaseModel
 
-from mrcs_core.operations.clock import Clock
+from mrcs_core.operations.time.clock import Clock
 
 
 # ----------------------------------------------------------------------------------------------------------------
 
 Speed = Annotated[int, Ge(1), Le(10)]
-Year = Annotated[int, Gt(Clock.START_OF_TIME)]
+Year = Annotated[int, Gt(Clock.START_OF_TIME_YEAR)]
 Month = Annotated[int, Ge(1), Le(12)]
 Day = Annotated[int, Ge(1), Le(31)]
 Hour = Annotated[int, Ge(0), Le(23)]
@@ -54,5 +54,5 @@ class ClockSetModel(BaseModel):
 
 class ClockConfModel(BaseModel):
     speed: int
-    offset: float
-    start: str
+    model_start: str
+    true_start: str

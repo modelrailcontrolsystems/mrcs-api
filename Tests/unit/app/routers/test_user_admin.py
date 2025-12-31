@@ -150,7 +150,7 @@ class TestUserAdmin(unittest.TestCase):
 
         jdict = JSONify.as_jdict(created)
 
-        response = self.__client.put(f'/user/update/', headers=headers, json=jdict)
+        response = self.__client.patch(f'/user/update/', headers=headers, json=jdict)
         assert response.status_code == 200
 
         response = self.__client.delete(f'/user/delete/{created.uid}/', headers=headers)
