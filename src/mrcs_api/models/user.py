@@ -10,7 +10,7 @@ from pydantic import BaseModel, ConfigDict
 
 from mrcs_api.security.scope import Scope
 
-from mrcs_control.admin.user.user import PersistentUser
+from mrcs_control.admin.user.persistent_user import PersistentUser
 
 from mrcs_core.admin.user.user import UserRole
 from mrcs_core.data.iso_datetime import ISODatetime
