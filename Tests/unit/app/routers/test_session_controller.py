@@ -16,7 +16,7 @@ from fastapi.testclient import TestClient
 from mrcs_api.app.main import app
 from mrcs_api.test_setup import TestSetup
 
-from mrcs_control.admin.user.user import PersistentUser
+from mrcs_control.admin.user.persistent_user import PersistentUser
 from mrcs_control.db.dbclient import DBClient
 
 from mrcs_core.security.token import JWT

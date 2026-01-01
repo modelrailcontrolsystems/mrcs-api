@@ -19,7 +19,7 @@ from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import AuthorisedAdmin, AuthorisedUser
 from mrcs_api.models.user import APIUser, UserCreateModel, UserUpdateModel, UserModel
 
-from mrcs_control.admin.user.user import PersistentUser
+from mrcs_control.admin.user.persistent_user import PersistentUser
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.data.json import JSONify
