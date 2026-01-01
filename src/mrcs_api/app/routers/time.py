@@ -57,18 +57,18 @@ async def conf() -> ClockConfModel:
 async def set_clock(user: AuthorisedOperator, s: ClockSetModel) -> str:
     logger.info(f'set_clock - user:{user.uid}')
 
-    clock = Clock.set(s.speed, s.year, s.month, s.day, s.hour, minute=s.minute, second=s.second)
+    clock = Clock.set(s.is_running, s.speed, s.year, s.month, s.day, s.hour, minute=s.minute, second=s.second)
     clock.save(Host)
 
     return JSONify.as_jdict(clock.now())
 
 
-@router.patch('/time/restart', tags=[Tags.Time])
-async def restart_clock(user: AuthorisedOperator) -> str:
-    logger.info(f'restart_clock  - user:{user.uid}')
+@router.patch('/time/start', tags=[Tags.Time])
+async def start_clock(user: AuthorisedOperator) -> str:
+    logger.info(f'start_clock  - user:{user.uid}')
 
     clock = Clock.load(Host, skeleton=True)
-    clock.restart()
+    clock.start()
     clock.save(Host)
 
     return JSONify.as_jdict(clock.now())

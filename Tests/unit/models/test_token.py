@@ -15,12 +15,18 @@ from datetime import timedelta
 from mrcs_api.models.user import APIUser
 from mrcs_api.security.token import APIJWT
 
+from mrcs_control.db.dbclient import DBClient
+
 from mrcs_core.security.token import TokenData
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
 class TestToken(unittest.TestCase):
+
+    def tearDown(self):
+        print('TestTime - tearDown')
+        DBClient.kill_all()
 
     def test_construct(self):
         user = self.__load_user('saved_user.json')

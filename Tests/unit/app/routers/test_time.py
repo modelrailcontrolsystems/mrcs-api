@@ -8,20 +8,15 @@ https://fastapi.tiangolo.com/tutorial/testing/#using-testclient
 """
 
 import json
-import os
 import unittest
 
 from fastapi.testclient import TestClient
 
 from mrcs_api.app.main import app
-from mrcs_api.test_setup import TestSetup
 
-from mrcs_control.admin.user.user import PersistentUser
 from mrcs_control.db.dbclient import DBClient
 
-from mrcs_core.admin.user.user import User
 from mrcs_core.data.iso_datetime import ISODatetime
-from mrcs_core.data.json import JSONify
 from mrcs_core.operations.time.clock import Clock
 from mrcs_core.security.token import JWT
 
@@ -38,6 +33,9 @@ class TestTime(unittest.TestCase):
         if self.token is None:
             self.token = self.__authorise()
 
+    def tearDown(self):
+        DBClient.kill_all()
+
 
     def test_now(self):
         response = self.__client.get('/time/now/')
@@ -53,15 +51,15 @@ class TestTime(unittest.TestCase):
 
     def test_set(self):
         headers = self.token.as_header()
-        conf = {'speed': 4, 'year': 2025, 'month': 1, 'day': 2, 'hour': 6}
+        conf = {'is_running': True, 'speed': 4, 'year': 2025, 'month': 1, 'day': 2, 'hour': 6}
         response = self.__client.put('/time/set/', headers=headers, json=conf)
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
 
-    def test_restart(self):
+    def test_start(self):
         headers = self.token.as_header()
-        response = self.__client.patch('/time/restart/', headers=headers)
+        response = self.__client.patch('/time/start/', headers=headers)
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
