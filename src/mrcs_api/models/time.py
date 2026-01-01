@@ -40,6 +40,7 @@ Second = Annotated[int, Ge(0), Le(59)]
 
 
 class ClockSetModel(BaseModel):
+    is_running: bool
     speed: Speed
 
     year: Year
@@ -53,6 +54,7 @@ class ClockSetModel(BaseModel):
 # ----------------------------------------------------------------------------------------------------------------
 
 class ClockConfModel(BaseModel):
+    is_running: bool
     speed: int
     model_start: str
     true_start: str

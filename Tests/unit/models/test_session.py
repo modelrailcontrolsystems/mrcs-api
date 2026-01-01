@@ -11,12 +11,18 @@ import unittest
 
 from mrcs_api.security.scope import Scope, ScopeDescription
 
+from mrcs_control.db.dbclient import DBClient
+
 from mrcs_core.admin.user.user import UserRole
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
 class TestSession(unittest.TestCase):
+
+    def tearDown(self):
+        print('TestTime - tearDown')
+        DBClient.kill_all()
 
     def test_list_scopes(self):
         scopes = list(Scope.keys())
