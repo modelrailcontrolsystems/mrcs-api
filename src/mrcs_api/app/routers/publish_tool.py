@@ -8,10 +8,11 @@ http://127.0.0.1:8000/tst/publish
 Test publisher tool (TST) API
 """
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter
 
 from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import AuthorisedOperator
+from mrcs_api.exceptions import BadRequest400Exception, NotAcceptable406Exception
 from mrcs_api.models.message import APIMessage, MessageModel
 
 from mrcs_control.messaging.mqclient import Publisher
@@ -45,9 +46,9 @@ async def publish(user: AuthorisedOperator, payload: MessageModel):
     try:
         message = APIMessage.construct_from_payload(payload)
     except ValueError as ex:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f'publish: {ex}')
+        raise BadRequest400Exception(f'publish: {ex}')
 
     if not message:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE, detail='publish: malformed payload')
+        raise NotAcceptable406Exception('publish: malformed payload')
 
     publisher.publish(message)

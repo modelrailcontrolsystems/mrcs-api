@@ -12,12 +12,14 @@ from fastapi import APIRouter
 
 from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import AuthorisedOperator
+from mrcs_api.exceptions import Conflict409Exception
 from mrcs_api.models.time import ClockSetModel, ClockConfModel
 
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.data.json import JSONify
 from mrcs_core.operations.time.clock import Clock
+from mrcs_core.operations.time.persistent_iso_datetime import PersistentISODatetime
 from mrcs_core.sys.host import Host
 
 from mrcs_core.sys.logging import Logging
@@ -41,7 +43,7 @@ router = APIRouter()
 async def now() -> str:
     logger.info(f'now')
 
-    clock = Clock.load(Host, skeleton=True)
+    clock = Clock.load(Host)
     return JSONify.as_jdict(clock.now())
 
 
@@ -49,7 +51,7 @@ async def now() -> str:
 async def conf() -> ClockConfModel:
     logger.info(f'conf')
 
-    clock = Clock.load(Host, skeleton=True)
+    clock = Clock.load(Host)
     return JSONify.as_jdict(clock)
 
 
@@ -67,8 +69,23 @@ async def set_clock(user: AuthorisedOperator, s: ClockSetModel) -> str:
 async def run_clock(user: AuthorisedOperator) -> str:
     logger.info(f'run_clock  - user:{user.uid}')
 
-    clock = Clock.load(Host, skeleton=True)
+    clock = Clock.load(Host)
     clock.run()
+    clock.save(Host)
+
+    return JSONify.as_jdict(clock.now())
+
+
+@router.patch('/time/reload', tags=[Tags.Time])
+async def reload_clock(user: AuthorisedOperator) -> str:
+    logger.info(f'reload_clock  - user:{user.uid}')
+
+    time = PersistentISODatetime.load(Host)
+    if time is None:
+        raise Conflict409Exception('reload_clock: no saved model time was available')
+
+    clock = Clock.load(Host)
+    clock.reload(time)
     clock.save(Host)
 
     return JSONify.as_jdict(clock.now())
@@ -79,5 +96,5 @@ async def delete_conf(user: AuthorisedOperator) -> str:
     logger.info(f'delete_conf  - user:{user.uid}')
 
     Clock.delete(Host)
-    clock = Clock.load(Host, skeleton=True)
+    clock = Clock.load(Host)
     return JSONify.as_jdict(clock.now())
