@@ -14,7 +14,7 @@ from fastapi.testclient import TestClient
 
 from mrcs_api.app.main import app
 
-from mrcs_control.db.dbclient import DBClient
+from mrcs_control.db.db_client import DbClient
 
 from mrcs_core.data.iso_datetime import ISODatetime
 from mrcs_core.operations.time.clock import Clock
@@ -34,7 +34,7 @@ class TestTime(unittest.TestCase):
             self.token = self.__authorise()
 
     def tearDown(self):
-        DBClient.kill_all()
+        DbClient.kill_all()
 
 
     def test_now(self):
@@ -57,9 +57,13 @@ class TestTime(unittest.TestCase):
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
 
-    def test_start(self):
+    def test_run(self):
         headers = self.token.as_header()
-        response = self.__client.patch('/time/start/', headers=headers)
+        conf = {'is_running': True, 'speed': 4, 'year': 2025, 'month': 1, 'day': 2, 'hour': 6}
+        response = self.__client.put('/time/set/', headers=headers, json=conf)
+        assert response.status_code == 200
+
+        response = self.__client.patch('/time/run/', headers=headers)
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None

@@ -17,7 +17,7 @@ from mrcs_api.app.main import app
 from mrcs_api.test_setup import TestSetup
 
 from mrcs_control.admin.user.persistent_user import PersistentUser
-from mrcs_control.db.dbclient import DBClient
+from mrcs_control.db.db_client import DbClient
 
 from mrcs_core.security.token import JWT
 
@@ -37,7 +37,7 @@ class TestSessionController(unittest.TestCase):
 
 
     def tearDown(self):
-        DBClient.kill_all()
+        DbClient.kill_all()
 
 
     def test_log_on(self):
@@ -66,6 +66,6 @@ class TestSessionController(unittest.TestCase):
         obj2 = PersistentUser.construct_from_jdict(jdict)
         obj2 = obj2.save(password='pass')
 
-        DBClient.kill_all()
+        DbClient.kill_all()
 
         return obj1, obj2

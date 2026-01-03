@@ -18,7 +18,7 @@ from mrcs_api.exceptions import InvalidCredentials400Exception
 from mrcs_api.models.user import APIUser
 from mrcs_api.security.token import TokenModel, APIJWT
 
-from mrcs_control.db.dbclient import DBClient
+from mrcs_control.db.db_client import DbClient
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.sys.logging import Logging
@@ -31,10 +31,11 @@ env = Environment.get()
 Logging.config(env.log_name + ': session_controller', level=env.log_level)
 logger = Logging.getLogger()
 
-DBClient.set_client_db_mode(env.ops_mode.value.db_mode)
+DbClient.set_client_db_mode(env.ops_mode.value.db_mode)
 
-logger.info(f'starting - client_db_mode:{DBClient.client_db_mode()}')
+logger.info(f'starting - client_db_mode:{DbClient.client_db_mode()}')
 
+# TODO: is the DbClient needed here?
 router = APIRouter()
 
 
