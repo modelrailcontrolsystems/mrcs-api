@@ -11,7 +11,7 @@ DESCRIPTION
 A launcher for the Uvicorn ASGI web server
 
 SYNOPSIS
-mrcs_uvicorn [-h] [-t] [-i INDENT] [-v] [--version] [-r]
+mrcs_uvicorn [-h] [-i INDENT] [-v] [--version] [-t] [-r]
 
 EXAMPLES
 mrcs_uvicorn -t -v -r

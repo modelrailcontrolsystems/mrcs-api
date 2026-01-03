@@ -17,7 +17,7 @@ from mrcs_api.app.main import app
 from mrcs_api.test_setup import TestSetup
 
 from mrcs_control.admin.user.persistent_user import PersistentUser
-from mrcs_control.db.dbclient import DBClient
+from mrcs_control.db.db_client import DbClient
 
 from mrcs_core.admin.user.user import User
 from mrcs_core.data.json import JSONify
@@ -44,7 +44,7 @@ class TestUserAdmin(unittest.TestCase):
 
 
     def tearDown(self):
-        DBClient.kill_all()
+        DbClient.kill_all()
 
 
     def test_find_all_fail(self):
@@ -184,7 +184,7 @@ class TestUserAdmin(unittest.TestCase):
         obj2 = PersistentUser.construct_from_jdict(jdict)
         obj2 = obj2.save(password='pass')
 
-        DBClient.kill_all()
+        DbClient.kill_all()
 
         return obj1, obj2
 

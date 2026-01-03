@@ -19,7 +19,7 @@ from fastapi import FastAPI     # Depends,
 
 from mrcs_api.app.routers import message_logger, publish_tool, session_controller, time, user_admin
 
-from mrcs_control.db.dbclient import DBClient
+from mrcs_control.db.db_client import DbClient
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.sys.logging import Logging
@@ -36,7 +36,7 @@ Logging.config(env.log_name + ': main', level=env.log_level)
 logger = Logging.getLogger()
 logger.info(f'starting: {env}')
 
-DBClient.set_client_db_mode(env.ops_mode.value.db_mode)
+DbClient.set_client_db_mode(env.ops_mode.value.db_mode)
 
 
 # --------------------------------------------------------------------------------------------------------------------

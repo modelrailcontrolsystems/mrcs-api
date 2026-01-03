@@ -3,7 +3,7 @@ Created on 13 Dec 2025
 
 @author: Bruno Beloff (bbeloff@me.com)
 
-Authentication and authorization exceptions
+Authentication and authorisation exceptions
 """
 
 from fastapi import HTTPException
