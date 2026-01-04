@@ -1,32 +1,30 @@
 #!/usr/bin/env python3
 
 """
-Created on 30 Nov 2025
+Created on 4 Jan 2026
 
 @author: Bruno Beloff (bbeloff@me.com)
 
 source repo: mrcs_api
 
 DESCRIPTION
-A launcher for the Uvicorn ASGI web server
+Manages JSON Web Token (JWT) timeout
 
 SYNOPSIS
-mrcs_uvicorn [-h] [-i INDENT] [-v] [--version] [-t] [-r]
+mrcs_token_timeout [-h] [-i INDENT] [-v] [--version] [-s HOURS MINUTES]
 
 EXAMPLES
-mrcs_uvicorn -t -v -r
-
-RESOURCES
+mrcs_token_timeout -s 2 0
 """
 
 import logging
-import os
 import sys
-import uvicorn
 
-from mrcs_api.cli.args.uvicorn_args import UvicornArgs
+from mrcs_api.cli.args.token_timeout_args import TokenTimeoutArgs
+from mrcs_api.security.token_timeout import TokenTimeout
 
-from mrcs_control.sys.environment import Environment
+from mrcs_core.data.json import JSONify
+from mrcs_core.sys.host import Host
 
 from mrcs_core.sys.logging import Logging
 
@@ -37,26 +35,23 @@ if __name__ == '__main__':
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    args = UvicornArgs('a launcher for the Uvicorn ASGI web server')
+    args = TokenTimeoutArgs('manages JSON Web Token (JWT) timeout')
 
-    Logging.config('mrcs_uvicorn', level=logging.INFO)
+    Logging.config('mrcs_token_timeout', level=logging.INFO)
     logger = Logging.getLogger()
     logger.info(f'args: {args}')
-    logger.info(f'mode: {args.mode.value}')
-
-    Environment.set(args.mode)
 
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    pieces = __file__.split(os.sep)
-    watched = os.sep.join(pieces[:-3])
-
-    if args.reload:
-        logger.info(f'watched: {watched}')
+    timeout = TokenTimeout.load(Host)
 
     try:
-        uvicorn.run('mrcs_api.app.main:app', reload=args.reload, reload_dirs=[watched])
+        if args.set:
+            timeout = TokenTimeout(args.hours, args.minutes)
+            timeout.save(Host)
+
+        print(JSONify.dumps(timeout, indent=args.indent))
 
     # ----------------------------------------------------------------------------------------------------------------
 

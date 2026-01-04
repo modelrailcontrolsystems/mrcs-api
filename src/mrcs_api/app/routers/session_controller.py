@@ -17,9 +17,10 @@ from mrcs_api.app.security.authorisation import PasswordRequestForm
 from mrcs_api.exceptions import InvalidCredentials400Exception
 from mrcs_api.models.user import APIUser
 from mrcs_api.security.token import TokenModel, APIJWT
+from mrcs_api.security.token_timeout import TokenTimeout
 
-from mrcs_control.db.db_client import DbClient
 from mrcs_control.sys.environment import Environment
+from mrcs_core.sys.host import Host
 
 from mrcs_core.sys.logging import Logging
 
@@ -31,11 +32,9 @@ env = Environment.get()
 Logging.config(env.log_name + ': session_controller', level=env.log_level)
 logger = Logging.getLogger()
 
-DbClient.set_client_db_mode(env.ops_mode.value.db_mode)
+timeout = TokenTimeout.load(Host)
+logger.info(timeout)
 
-logger.info(f'starting - client_db_mode:{DbClient.client_db_mode()}')
-
-# TODO: is the DbClient needed here?
 router = APIRouter()
 
 
@@ -47,4 +46,4 @@ async def create(form: PasswordRequestForm) -> TokenModel:
     if not user:
         raise InvalidCredentials400Exception()
 
-    return APIJWT.construct(user).encode()
+    return APIJWT.construct(user, timeout.delta()).encode()
