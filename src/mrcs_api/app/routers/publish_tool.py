@@ -15,7 +15,7 @@ from mrcs_api.app.security.authorisation import AuthorisedOperator
 from mrcs_api.exceptions import BadRequest400Exception, NotAcceptable406Exception
 from mrcs_api.models.message import APIMessage, MessageModel
 
-from mrcs_control.messaging.mqclient import Publisher
+from mrcs_control.messaging.mq_client import Publisher
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.sys.logging import Logging
