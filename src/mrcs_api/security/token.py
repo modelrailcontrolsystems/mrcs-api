@@ -35,11 +35,10 @@ class APIJWT(JWT):
     # ----------------------------------------------------------------------------------------------------------------
 
     @classmethod
-    def construct(cls, user: APIUser, delta: timedelta | None = None):
+    def construct(cls, user: APIUser, expires_delta: timedelta):
         if not user.uid:
             raise ValueError('the user must have a valid uid')
 
-        expires_delta = timedelta(minutes=AccessToken.DEFAULT_EXPIRE_MINUTES) if delta is None else delta
         data = TokenData(user.uid, user.scopes())
         access = AccessToken(data, expires_delta)
 

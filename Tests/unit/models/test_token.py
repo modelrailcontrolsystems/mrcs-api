@@ -31,7 +31,7 @@ class TestToken(unittest.TestCase):
     def test_construct(self):
         user = self.__load_user('saved_user.json')
         delta = timedelta(hours=12)
-        jwt = APIJWT.construct(user, delta=delta)
+        jwt = APIJWT.construct(user, delta)
 
         assert jwt.access.data.sub == user.uid
         assert jwt.access.data.scopes == {'OBSERVE', 'MANAGE_USER_ACCOUNTS', 'OPERATE_EQUIPMENT', 'ALTER_LAYOUT'}
@@ -43,7 +43,7 @@ class TestToken(unittest.TestCase):
         delta = timedelta(hours=12)
 
         try:
-            APIJWT.construct(user, delta=delta)
+            APIJWT.construct(user, delta)
         except ValueError as ex:
             assert str(ex) == 'the user must have a valid uid'
 
@@ -51,7 +51,7 @@ class TestToken(unittest.TestCase):
     def test_encoded(self):
         user = self.__load_user('saved_user.json')
         delta = timedelta(hours=12)
-        jwt = APIJWT.construct(user, delta=delta)
+        jwt = APIJWT.construct(user, delta)
         encoded = jwt.encode()
 
         assert len(encoded.access_token) > 100
@@ -61,7 +61,7 @@ class TestToken(unittest.TestCase):
     def test_decoded(self):
         user = self.__load_user('saved_user.json')
         delta = timedelta(hours=12)
-        jwt = APIJWT.construct(user, delta=delta)
+        jwt = APIJWT.construct(user, delta)
         encoded = jwt.encode()
         decoded = TokenData.decode(encoded.access_token)
 
