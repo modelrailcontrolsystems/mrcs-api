@@ -15,7 +15,7 @@ from mrcs_api.app.security.authorisation import AuthorisedOperator
 from mrcs_api.exceptions import BadRequest400Exception, NotAcceptable406Exception
 from mrcs_api.models.message import APIMessage, MessageModel
 
-from mrcs_control.messaging.mq_client import Publisher
+from mrcs_control.messaging.mq_client import MQPublisher
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.sys.logging import Logging
@@ -32,7 +32,7 @@ logger.info(f'starting')
 
 router = APIRouter()
 
-publisher = Publisher.construct_pub(env.ops_mode.value.mq_mode)
+publisher = MQPublisher.construct_pub(env.ops_mode.value.mq_mode)
 publisher.connect()
 logger.info(f'publisher:{publisher}')
 
