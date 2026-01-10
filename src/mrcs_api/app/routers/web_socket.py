@@ -3,11 +3,12 @@ Created on 9 Jan 2026
 
 @author: Bruno Beloff (bbeloff@me.com)
 
-http://127.0.0.1:8000/ws
+http://bruno.local:8000/ws
 
 General-purpose web socket
 
 https://fastapi.tiangolo.com/advanced/websockets/#await-for-messages-and-send-messages
+https://betterstack.com/community/guides/scaling-python/fastapi-websockets/
 """
 
 import os
