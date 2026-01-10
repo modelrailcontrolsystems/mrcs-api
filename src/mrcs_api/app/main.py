@@ -15,9 +15,11 @@ https://github.com/fastapi/fastapi/discussions/6055
 https://fastapi.tiangolo.com/advanced/events/#lifespan
 """
 
+import socket
+
 from fastapi import FastAPI     # Depends,
 
-from mrcs_api.app.routers import message_logger, publish_tool, session_controller, time, user_admin
+from mrcs_api.app.routers import message_logger, publish_tool, session_controller, time, user_admin, web_socket
 
 from mrcs_control.db.db_client import DbClient
 from mrcs_control.sys.environment import Environment
@@ -38,6 +40,8 @@ logger.info(f'starting: {env}')
 
 DbClient.set_client_db_mode(env.ops_mode.value.db_mode)
 
+hostname = socket.gethostname()
+logger.info(f'hostname:{hostname}')
 
 # --------------------------------------------------------------------------------------------------------------------
 
@@ -48,6 +52,7 @@ app.include_router(publish_tool.router)
 app.include_router(session_controller.router)
 app.include_router(time.router)
 app.include_router(user_admin.router)
+app.include_router(web_socket.router)
 
 # app.include_router(
 #     admin.router,

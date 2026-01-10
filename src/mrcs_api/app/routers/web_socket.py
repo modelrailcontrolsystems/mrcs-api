@@ -1,0 +1,52 @@
+"""
+Created on 9 Jan 2026
+
+@author: Bruno Beloff (bbeloff@me.com)
+
+http://127.0.0.1:8000/ws
+
+General-purpose web socket
+
+https://fastapi.tiangolo.com/advanced/websockets/#await-for-messages-and-send-messages
+"""
+
+import os
+
+from fastapi import APIRouter
+from fastapi.responses import HTMLResponse
+
+from mrcs_api.app.internal.tags import Tags
+from mrcs_api.app.internal.web_socket_manager import WebSocketManager
+
+from mrcs_control.sys.environment import Environment
+
+from mrcs_core.sys.host import Host
+from mrcs_core.sys.logging import Logging
+
+
+# --------------------------------------------------------------------------------------------------------------------
+
+env = Environment.get()
+
+Logging.config(env.log_name + ': web_socket', level=env.log_level)
+logger = Logging.getLogger()
+
+logger.info(f'starting')
+
+router = APIRouter()
+
+manager = WebSocketManager(logger)
+logger.info(f'manager:{manager}')
+
+
+# --------------------------------------------------------------------------------------------------------------------
+
+@router.get("/ws", tags=[Tags.WebSockets])
+async def get():
+    with open(os.path.join(os.path.dirname(__file__), 'public', 'test_client.html')) as f:
+        html = f.read()
+
+    hostname = Host.name()
+    logger.info(f'hostname:{hostname}')
+
+    return HTMLResponse(html.replace('XXX.XXX.XXX.XXX', hostname))

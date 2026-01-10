@@ -8,9 +8,11 @@ http://127.0.0.1:8000/time
 Time API
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, WebSocket
+from starlette.websockets import WebSocketDisconnect
 
 from mrcs_api.app.internal.tags import Tags
+from mrcs_api.app.internal.web_socket_manager import WebSocketManager
 from mrcs_api.app.security.authorisation import AuthorisedOperator
 from mrcs_api.exceptions import Conflict409Exception
 from mrcs_api.models.time import ClockSetModel, ClockConfModel
@@ -34,6 +36,9 @@ logger = Logging.getLogger()
 
 logger.info(f'starting')
 
+ws_manager = WebSocketManager(logger)
+logger.info(f'ws_manager:{ws_manager}')
+
 router = APIRouter()
 
 
@@ -52,6 +57,8 @@ async def conf() -> ClockConfModel:
     logger.info(f'conf')
 
     clock = Clock.load(Host)
+    await ws_manager.broadcast(JSONify.as_jdict(clock))
+
     return JSONify.as_jdict(clock)
 
 
@@ -98,3 +105,19 @@ async def delete_conf(user: AuthorisedOperator) -> str:
     Clock.delete(Host)
     clock = Clock.load(Host)
     return JSONify.as_jdict(clock.now())
+
+
+# --------------------------------------------------------------------------------------------------------------------
+
+@router.websocket('/time/conf/subscribe')
+async def subscribe_conf(socket: WebSocket):
+    logger.info(f'subscribe_conf  - socket:{hash(socket)}')
+    await ws_manager.connect(socket)
+
+    try:
+        while True:
+            text = await socket.receive_text()     # needed for heartbeat?
+            logger.info(f'subscribe_conf  - text:{text}')
+
+    except WebSocketDisconnect:
+        ws_manager.disconnect(socket)
