@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 """
 Created on 18 Dec 2025
 
@@ -20,3 +18,4 @@ class Tags(StrEnum):
     Session = 'Session'
     Time = 'Time'
     Users = 'Users'
+    WebSockets = 'WebSockets'

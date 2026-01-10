@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Chat</title>
+    </head>
+    <body>
+        <h1>WebSocket Status</h1>
+        <h2>Messages:</h2>
+        <ul id='messages'>
+        </ul>
+
+        <script>
+            const host = 'XXX.XXX.XXX.XXX'
+            const messages = document.getElementById('messages')
+
+            function add_report(report) {
+                const message = document.createElement('li')
+                const content = document.createTextNode(report)
+                message.appendChild(content)
+                messages.appendChild(message)
+            }
+
+            let ws;
+
+            function connect() {
+                console.log('attempting to connect')
+                ws = new WebSocket(`ws://${host}:8000/time/conf/subscribe`);
+            }
+
+            function subscribe() {
+                ws.onmessage = on_message
+                add_report('subscribed')
+            }
+
+            function check_connection() {
+                switch (ws.readyState) {
+                    case ws.OPEN:
+                        if (ws.onmessage === null) {
+                            subscribe()
+                        }
+                        break
+
+                    case ws.CLOSING:
+                    case ws.CLOSED:
+                        if (ws.onmessage !== null) {
+                            add_report('disconnected')
+                        }
+                        connect()
+                        break
+                }
+            }
+
+            function on_message(event) {
+                add_report(event.data)
+            }
+
+            connect()
+            subscribe()
+            setInterval(check_connection, 2000)
+        </script>
+    </body>
+</html>

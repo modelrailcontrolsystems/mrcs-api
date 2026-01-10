@@ -56,7 +56,7 @@ if __name__ == '__main__':
         logger.info(f'watched: {watched}')
 
     try:
-        uvicorn.run('mrcs_api.app.main:app', reload=args.reload, reload_dirs=[watched])
+        uvicorn.run('mrcs_api.app.main:app', host='0.0.0.0', reload=args.reload, reload_dirs=[watched])
 
     # ----------------------------------------------------------------------------------------------------------------
 
