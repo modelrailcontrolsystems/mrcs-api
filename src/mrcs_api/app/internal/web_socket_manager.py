@@ -3,22 +3,26 @@ Created on 9 Jan 2026
 
 @author: Bruno Beloff (bbeloff@me.com)
 
+A WebSocket connection manager, providing broadcast capabilities
+
 https://fastapi.tiangolo.com/advanced/websockets/#handling-disconnections-and-multiple-clients
 """
 
 from fastapi import WebSocket
+
+from mrcs_core.sys.logging import Logging
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
 class WebSocketManager(object):
     """
-    stuff
+    a WebSocket connection manager
     """
 
-    def __init__(self, logger):
+    def __init__(self):
         self.__sockets: dict[int, WebSocket] = {}
-        self.__logger = logger
+        self.__logger = Logging.getLogger()
 
 
     # ----------------------------------------------------------------------------------------------------------------
