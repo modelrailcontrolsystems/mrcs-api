@@ -23,7 +23,6 @@ from mrcs_core.data.json import JSONify
 from mrcs_core.operations.time.clock import Clock
 from mrcs_core.operations.time.persistent_iso_datetime import PersistentISODatetime
 from mrcs_core.sys.host import Host
-
 from mrcs_core.sys.logging import Logging
 
 
@@ -31,12 +30,12 @@ from mrcs_core.sys.logging import Logging
 
 env = Environment.get()
 
-Logging.config(env.log_name + ': time', level=env.log_level)
+Logging.config(env.log_name + ': time_controller', level=env.log_level)
 logger = Logging.getLogger()
 
 logger.info(f'starting')
 
-ws_manager = WebSocketManager(logger)
+ws_manager = WebSocketManager()
 logger.info(f'ws_manager:{ws_manager}')
 
 router = APIRouter()
@@ -57,7 +56,7 @@ async def conf() -> ClockConfModel:
     logger.info(f'conf')
 
     clock = Clock.load(Host)
-    await ws_manager.broadcast(JSONify.as_jdict(clock))
+    await ws_manager.broadcast(JSONify.as_jdict(clock))     # TODO: let the app's MQclient handle this
 
     return JSONify.as_jdict(clock)
 
@@ -112,12 +111,11 @@ async def delete_conf(user: AuthorisedOperator) -> str:
 @router.websocket('/time/conf/subscribe')
 async def subscribe_conf(socket: WebSocket):
     logger.info(f'subscribe_conf  - socket:{hash(socket)}')
+
     await ws_manager.connect(socket)
 
     try:
         while True:
-            text = await socket.receive_text()     # needed for heartbeat?
-            logger.info(f'subscribe_conf  - text:{text}')
-
+            await socket.receive_text()
     except WebSocketDisconnect:
         ws_manager.disconnect(socket)

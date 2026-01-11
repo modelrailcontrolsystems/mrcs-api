@@ -17,7 +17,6 @@ from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
 from mrcs_api.app.internal.tags import Tags
-from mrcs_api.app.internal.web_socket_manager import WebSocketManager
 
 from mrcs_control.sys.environment import Environment
 
@@ -35,9 +34,6 @@ logger = Logging.getLogger()
 logger.info(f'starting')
 
 router = APIRouter()
-
-manager = WebSocketManager(logger)
-logger.info(f'manager:{manager}')
 
 
 # --------------------------------------------------------------------------------------------------------------------

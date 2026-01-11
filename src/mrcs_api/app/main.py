@@ -15,20 +15,31 @@ https://github.com/fastapi/fastapi/discussions/6055
 https://fastapi.tiangolo.com/advanced/events/#lifespan
 """
 
+import asyncio
 import socket
+from contextlib import asynccontextmanager
 
-from fastapi import FastAPI     # Depends,
+from fastapi import FastAPI  # Depends,
 
-from mrcs_api.app.routers import message_logger, publish_tool, session_controller, time, user_admin, web_socket
+from mrcs_api.app.routers import (message_logger, publish_tool, session_controller, time_controller, user_admin,
+                                  web_socket)
 
 from mrcs_control.db.db_client import DbClient
+from mrcs_control.messaging.mq_client_async import MQClientAsync
 from mrcs_control.sys.environment import Environment
+from mrcs_core.data.equipment_identity import EquipmentIdentifier, EquipmentType
+from mrcs_core.messaging.message import Message
 
 from mrcs_core.sys.logging import Logging
 
 # from .dependencies import get_query_token, get_token_header
 # from .internal import admin
 
+
+# --------------------------------------------------------------------------------------------------------------------
+
+__TITLE = 'MRCS Controller API'
+__SUMMARY = 'Provides an interface to MRCS command operations for the MRCS Web User Interface and CLI.'
 
 # --------------------------------------------------------------------------------------------------------------------
 
@@ -43,14 +54,40 @@ DbClient.set_client_db_mode(env.ops_mode.value.db_mode)
 hostname = socket.gethostname()
 logger.info(f'hostname:{hostname}')
 
+
 # --------------------------------------------------------------------------------------------------------------------
 
-app = FastAPI()     # dependencies=[Depends(get_query_token)]
+mq_client = None
+
+
+def handler(message: Message):
+    logger.info(f'*** handler - message:{message}')
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    logger.info('*** lifespan: part1')
+    global mq_client
+    await asyncio.sleep(5)     # Wait for MQ
+
+    identity = EquipmentIdentifier(EquipmentType.IAP, None, 1)
+    mq_client = MQClientAsync.construct(env.ops_mode.value.mq_mode, identity, handler)
+    logger.info(f'*** lifespan: mq_client:{mq_client}')
+
+    mq_client.connect()
+    logger.info('*** lifespan: part1 completed')
+    yield
+    logger.info('*** lifespan: part2')
+    # TODO: close mq_client connection
+
+# --------------------------------------------------------------------------------------------------------------------
+app = FastAPI(title=__TITLE, summary=__SUMMARY, lifespan=lifespan)
+# , lifespan=lifespan, dependencies=[Depends(get_query_token)]
 
 app.include_router(message_logger.router)
 app.include_router(publish_tool.router)
 app.include_router(session_controller.router)
-app.include_router(time.router)
+app.include_router(time_controller.router)
 app.include_router(user_admin.router)
 app.include_router(web_socket.router)
 
