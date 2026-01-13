@@ -21,7 +21,7 @@ from mrcs_control.sys.environment import Environment
 
 from mrcs_core.data.json import JSONify
 from mrcs_core.operations.time.clock import Clock
-from mrcs_core.operations.time.persistent_iso_datetime import PersistentISODatetime
+from mrcs_core.operations.time.clock_iso_datetime import ClockISODatetime
 from mrcs_core.sys.host import Host
 from mrcs_core.sys.logging import Logging
 
@@ -86,7 +86,7 @@ async def run_clock(user: AuthorisedOperator) -> str:
 async def reload_clock(user: AuthorisedOperator) -> str:
     logger.info(f'reload_clock  - user:{user.uid}')
 
-    time = PersistentISODatetime.load(Host)
+    time = ClockISODatetime.load(Host)
     if time is None:
         raise Conflict409Exception('reload_clock: no saved model time was available')
 
