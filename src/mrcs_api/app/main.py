@@ -25,10 +25,12 @@ from mrcs_api.app.routers import (message_logger, publish_tool, session_controll
                                   web_socket)
 
 from mrcs_control.db.db_client import DbClient
-from mrcs_control.messaging.mq_client_async import MQClientAsync
+from mrcs_control.messaging.mq_async_client import MQAsyncSubscriber
 from mrcs_control.sys.environment import Environment
-from mrcs_core.data.equipment_identity import EquipmentIdentifier, EquipmentType
+
+from mrcs_core.data.equipment_identity import EquipmentIdentifier, EquipmentType, EquipmentFilter
 from mrcs_core.messaging.message import Message
+from mrcs_core.messaging.routing_key import SubscriptionRoutingKey
 
 from mrcs_core.sys.logging import Logging
 
@@ -71,14 +73,17 @@ async def lifespan(_: FastAPI):
     await asyncio.sleep(5)     # Wait for MQ
 
     identity = EquipmentIdentifier(EquipmentType.IAP, None, 1)
-    mq_client = MQClientAsync.construct(env.ops_mode.value.mq_mode, identity, handler)
+    routing_key = SubscriptionRoutingKey(EquipmentFilter.all(), EquipmentFilter.all())
+    mq_client = MQAsyncSubscriber.construct_sub(env.ops_mode.value.mq_mode, identity, handler, routing_key)
     logger.info(f'*** lifespan: mq_client:{mq_client}')
 
     mq_client.connect()
     logger.info('*** lifespan: part1 completed')
     yield
+
     logger.info('*** lifespan: part2')
-    # TODO: close mq_client connection
+    # TODO: close mq_client connection?
+
 
 # --------------------------------------------------------------------------------------------------------------------
 app = FastAPI(title=__TITLE, summary=__SUMMARY, lifespan=lifespan)
