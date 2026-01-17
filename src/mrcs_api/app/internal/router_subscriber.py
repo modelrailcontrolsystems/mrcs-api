@@ -23,11 +23,11 @@ class RouterSubscriber(SubscriberNode):
 
     @classmethod
     def identity(cls):
-        return EquipmentIdentifier(EquipmentType.IAP, None, 1)
+        return EquipmentIdentifier(EquipmentType.API, None, 1)
 
 
     @classmethod
-    def routing_keys(cls):
+    def subscription_routing_keys(cls):
         return (SubscriptionRoutingKey(EquipmentFilter.all(), EquipmentFilter.all()), )
 
 
@@ -50,7 +50,7 @@ class RouterSubscriber(SubscriberNode):
         self.mq_client.connect()
 
         try:
-            self.mq_client.subscribe(*self.routing_keys())
+            self.mq_client.subscribe(*self.subscription_routing_keys())
         except KeyboardInterrupt:
             return
 
@@ -77,6 +77,6 @@ class RouterSubscriber(SubscriberNode):
     # ----------------------------------------------------------------------------------------------------------------
 
     def __str__(self, *args, **kwargs):
-        routing_keys = [str(key) for key in self.routing_keys()]
-        return (f'{self.__class__.__name__}:{{identity:{self.identity()}, is_subscribing:{self.is_subscribing}, '
-                f'routing_keys:{routing_keys}, ops:{self.ops}, mq_client:{self.mq_client}}}')
+        routing_keys = [str(key) for key in self.subscription_routing_keys()]
+        return (f'{self.__class__.__name__}:{{is_subscribing:{self.is_subscribing}, '
+                f'subscription_routing_keys:{routing_keys}, ops:{self.ops}, mq_client:{self.mq_client}}}')

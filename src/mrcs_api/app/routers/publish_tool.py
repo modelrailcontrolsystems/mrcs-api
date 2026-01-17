@@ -5,7 +5,7 @@ Created on 27 Nov 2025
 
 http://127.0.0.1:8000/tst/publish
 
-Test publisher tool (ITS) API
+Test publisher tool (TST) API
 """
 
 from fastapi import APIRouter
