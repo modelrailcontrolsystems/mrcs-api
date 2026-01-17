@@ -38,7 +38,7 @@ logger.info(f'starting')
 ws_manager = WebSocketManager()
 logger.info(f'ws_manager:{ws_manager}')
 
-router = APIRouter()
+router = APIRouter()        # lifespan=
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -56,8 +56,6 @@ async def conf() -> ClockConfModel:
     logger.info(f'conf')
 
     clock = Clock.load(Host)
-    await ws_manager.broadcast(JSONify.as_jdict(clock))     # TODO: let the app's MQclient handle this
-
     return JSONify.as_jdict(clock)
 
 
