@@ -83,7 +83,6 @@ class TestUserAdmin(unittest.TestCase):
         assert response.status_code == 200
 
         user = User.construct_from_jdict(response.json())
-        print(f'user:{user}')
         assert user.email == 'bbeloff1@me.com'
 
 

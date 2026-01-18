@@ -25,7 +25,6 @@ from mrcs_core.security.token import TokenData
 class TestToken(unittest.TestCase):
 
     def tearDown(self):
-        print('TestTime - tearDown')
         DbClient.kill_all()
 
     def test_construct(self):

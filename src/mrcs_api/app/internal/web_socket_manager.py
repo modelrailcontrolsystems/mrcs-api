@@ -30,16 +30,17 @@ class WebSocketManager(object):
     async def connect(self, socket: WebSocket):
         await socket.accept()
         self.__sockets[hash(socket)] = socket
-        self.__logger.info(f'connect:{self}')
+
+        self.__logger.info(f'connect: {self}')
 
 
     def disconnect(self, socket):
         self.__sockets.pop(hash(socket), None)
-        self.__logger.info(f'disconnect:{self}')
+        self.__logger.info(f'disconnect: {self}')
 
 
     async def broadcast(self, jdict: dict):
-        self.__logger.info(f'broadcast:{self}')
+        self.__logger.info(f'broadcast: {self}')
 
         for id, socket in list(self.__sockets.items()):
             try:
