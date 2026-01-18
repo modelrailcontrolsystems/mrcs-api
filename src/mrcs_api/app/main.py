@@ -26,14 +26,8 @@ from mrcs_api.app.routers import (message_logger, publish_tool, session_controll
                                   web_socket)
 
 from mrcs_control.db.db_client import DbClient
-from mrcs_control.messaging.mq_async_client import MQAsyncSubscriber
-from mrcs_control.operations.time.clock_manager import ClockManager
 from mrcs_control.sys.environment import Environment
 
-from mrcs_core.data.equipment_identity import EquipmentIdentifier, EquipmentType, EquipmentFilter
-from mrcs_core.data.json import JSONify
-from mrcs_core.messaging.message import Message
-from mrcs_core.messaging.routing_key import SubscriptionRoutingKey
 from mrcs_core.sys.logging import Logging
 
 # from .dependencies import get_query_token, get_token_header
@@ -61,33 +55,15 @@ logger.info(f'hostname:{hostname}')
 
 # --------------------------------------------------------------------------------------------------------------------
 
-mq_client = None
-
-
-def handler(message: Message):
-    logger.info(f'*** handler - message:{JSONify.as_jdict(message)}')
-
-    loop = asyncio.get_event_loop()
-    asyncio.wait(loop.create_task(time_controller.ws_manager.broadcast(message.body)))
-
-
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     logger.info('*** lifespan: part1')
-    global mq_client
     await asyncio.sleep(5)     # Wait for MQ
 
-    identity = EquipmentIdentifier(EquipmentType.API, None, 1)
-    routing_key = SubscriptionRoutingKey(ClockManager.identity(), EquipmentFilter.all())
-    mq_client = MQAsyncSubscriber.construct_sub(env.ops_mode.value.mq_mode, identity, handler, routing_key)
-    logger.info(f'*** lifespan: mq_client:{mq_client}')
-
-    mq_client.connect()
-    logger.info('*** lifespan: part1 completed')
+    time_controller.time_controller_node.connect()
     yield
 
     logger.info('*** lifespan: part2')
-    # TODO: close mq_client connection?
 
 
 # --------------------------------------------------------------------------------------------------------------------

@@ -13,6 +13,7 @@ import unittest
 from fastapi.testclient import TestClient
 
 from mrcs_api.app.main import app
+from mrcs_api.app.routers.time_controller import time_controller_node
 
 from mrcs_control.db.db_client import DbClient
 
@@ -33,23 +34,32 @@ class TestTime(unittest.TestCase):
         if self.token is None:
             self.token = self.__authorise()
 
+
     def tearDown(self):
         DbClient.kill_all()
 
 
-    def test_now(self):
+    async def test_now(self):
+        await time_controller_node.connect()
+
         response = self.__client.get('/time/now/')
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
 
-    def test_conf(self):
+
+    async def test_conf(self):
+        await time_controller_node.connect()
+
         response = self.__client.get('/time/conf/')
         assert response.status_code == 200
         conf = Clock.construct_from_jdict(response.json())
         assert conf is not None
 
-    def test_set(self):
+
+    async def test_set(self):
+        await time_controller_node.connect()
+
         headers = self.token.as_header()
         conf = {'is_running': True, 'speed': 4, 'year': 2025, 'month': 1, 'day': 2, 'hour': 6}
         response = self.__client.put('/time/set/', headers=headers, json=conf)
@@ -57,7 +67,10 @@ class TestTime(unittest.TestCase):
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
 
-    def test_run(self):
+
+    async def test_run(self):
+        await time_controller_node.connect()
+
         headers = self.token.as_header()
         conf = {'is_running': True, 'speed': 4, 'year': 2025, 'month': 1, 'day': 2, 'hour': 6}
         response = self.__client.put('/time/set/', headers=headers, json=conf)
@@ -68,7 +81,9 @@ class TestTime(unittest.TestCase):
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
 
-    def test_delete(self):
+    async def test_delete(self):
+        await time_controller_node.connect()
+
         headers = self.token.as_header()
         response = self.__client.delete('/time/delete/', headers=headers)
         assert response.status_code == 200
