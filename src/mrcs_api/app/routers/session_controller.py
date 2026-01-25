@@ -40,7 +40,7 @@ router = APIRouter(prefix='/session', tags=[Tags.Session])
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.post('/', status_code=status.HTTP_201_CREATED)
+@router.post('', status_code=status.HTTP_201_CREATED)
 async def create(form: PasswordRequestForm) -> TokenModel:
     user = APIUser.log_in(form.username, form.password)
     if not user:
