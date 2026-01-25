@@ -14,7 +14,7 @@ from fastapi import APIRouter, WebSocket
 from starlette.websockets import WebSocketDisconnect
 
 from mrcs_api.app.internal.tags import Tags
-from mrcs_api.app.internal.time_controller_subscriber import TimeControllerSubscriber
+from mrcs_api.app.internal.time_controller_node import TimeControllerNode
 from mrcs_api.app.internal.web_socket_manager import WebSocketManager
 from mrcs_api.app.security.authorisation import AuthorisedOperator
 from mrcs_api.exceptions import Conflict409Exception
@@ -55,7 +55,7 @@ logger.info(f'starting')
 ws_manager = WebSocketManager()
 logger.info(f'ws_manager:{ws_manager}')
 
-time_controller_node = TimeControllerSubscriber(env.ops_mode.value, handler)
+time_controller_node = TimeControllerNode(env.ops_mode.value, handler)
 logger.info(f'time_controller_node:{time_controller_node}')
 
 router = APIRouter()
@@ -83,7 +83,7 @@ async def set_clock(user: AuthorisedOperator, s: ClockSetModel) -> str:
     logger.info(f'set_clock - user:{user.uid}')
 
     clock = Clock.set(s.is_running, s.speed, s.year, s.month, s.day, s.hour, minute=s.minute, second=s.second)
-    time_controller_node.publish_clock(clock)
+    await time_controller_node.configure_clock(clock)
 
     return JSONify.as_jdict(clock.now())
 
@@ -94,7 +94,7 @@ async def run_clock(user: AuthorisedOperator) -> str:
 
     clock = Clock.load(Host)
     clock.run()
-    time_controller_node.publish_clock(clock)
+    await time_controller_node.configure_clock(clock)
 
     return JSONify.as_jdict(clock.now())
 
@@ -109,7 +109,7 @@ async def reload_clock(user: AuthorisedOperator) -> str:
 
     clock = Clock.load(Host)
     clock.reload(time)
-    time_controller_node.publish_clock(clock)
+    await time_controller_node.configure_clock(clock)
 
     return JSONify.as_jdict(clock.now())
 
@@ -120,7 +120,7 @@ async def delete_conf(user: AuthorisedOperator) -> str:
 
     Clock.delete(Host)
     clock = Clock.load(Host)
-    time_controller_node.publish_clock(clock)
+    await time_controller_node.configure_clock(clock)
 
     return JSONify.as_jdict(clock.now())
 

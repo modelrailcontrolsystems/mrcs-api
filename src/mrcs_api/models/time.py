@@ -56,5 +56,5 @@ class ClockSetModel(BaseModel):
 class ClockConfModel(BaseModel):
     is_running: bool
     speed: int
-    model_start: str
-    true_start: str
+    model_start: str | None
+    true_start:  str | None

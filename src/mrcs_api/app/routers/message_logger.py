@@ -3,7 +3,7 @@ Created on 27 Nov 2025
 
 @author: Bruno Beloff (bbeloff@me.com)
 
-Message logger (MLG) API
+Message logger API
 
 http://127.0.0.1:8000/mlg/latest
 
@@ -18,7 +18,7 @@ from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import AuthorisedObserver
 from mrcs_api.models.message import MessageRecordModel
 
-from mrcs_control.operations.recorder.message_recorder import MessageRecorder
+from mrcs_control.operations.recorder.message_recorder_node import MessageRecorderNode
 from mrcs_control.sys.environment import Environment
 
 from mrcs_core.data.json import JSONify
@@ -36,7 +36,7 @@ logger.info(f'starting')
 
 router = APIRouter()
 
-recorder = MessageRecorder.construct(env.ops_mode)
+recorder_node = MessageRecorderNode.construct(env.ops_mode)
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -44,6 +44,6 @@ recorder = MessageRecorder.construct(env.ops_mode)
 @router.get('/mlg/latest', tags=[Tags.Messages])
 async def latest_messages(user: AuthorisedObserver, limit: int = 10) -> List[MessageRecordModel]:
     logger.info(f'latest_messages - user:{user.uid} limit:{limit}')
-    records = list(recorder.find_latest(limit))
+    records = list(recorder_node.find_latest(limit))
 
     return JSONify.as_jdict(records)
