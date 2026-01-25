@@ -33,12 +33,12 @@ logger = Logging.getLogger()
 
 logger.info(f'starting')
 
-router = APIRouter()
+router = APIRouter(prefix='/ws', tags=[Tags.WebSockets])
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.get("/ws", tags=[Tags.WebSockets])
+@router.get("/")
 async def get():
     with open(os.path.join(os.path.dirname(__file__), 'public', 'test_client.html')) as f:
         html = f.read()

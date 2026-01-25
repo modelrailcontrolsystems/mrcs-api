@@ -10,7 +10,7 @@ User session API
 https://stackoverflow.com/questions/5868786/what-method-should-i-use-for-a-login-authentication-request
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import PasswordRequestForm
@@ -35,12 +35,12 @@ logger = Logging.getLogger()
 timeout = TokenTimeout.load(Host)
 logger.info(timeout)
 
-router = APIRouter()
+router = APIRouter(prefix='/session', tags=[Tags.Session])
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.post('/session', status_code=201, tags=[Tags.Session])
+@router.post('/', status_code=status.HTTP_201_CREATED)
 async def create(form: PasswordRequestForm) -> TokenModel:
     user = APIUser.log_in(form.username, form.password)
     if not user:

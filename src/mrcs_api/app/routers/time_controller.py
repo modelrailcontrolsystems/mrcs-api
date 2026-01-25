@@ -58,11 +58,11 @@ logger.info(f'ws_manager:{ws_manager}')
 time_controller_node = TimeControllerNode(env.ops_mode.value, handler)
 logger.info(f'time_controller_node:{time_controller_node}')
 
-router = APIRouter()
+router = APIRouter(prefix='/time', tags=[Tags.Time])
 
 
 # --------------------------------------------------------------------------------------------------------------------
-@router.get('/time/now', tags=[Tags.Time])
+@router.get('/now')
 async def now() -> str:
     logger.info(f'now')
 
@@ -70,7 +70,7 @@ async def now() -> str:
     return JSONify.as_jdict(clock.now())
 
 
-@router.get('/time/conf', tags=[Tags.Time])
+@router.get('/conf')
 async def conf() -> ClockConfModel:
     logger.info(f'conf')
 
@@ -78,7 +78,7 @@ async def conf() -> ClockConfModel:
     return JSONify.as_jdict(clock)
 
 
-@router.put('/time/set', tags=[Tags.Time])
+@router.put('/set')
 async def set_clock(user: AuthorisedOperator, s: ClockSetModel) -> str:
     logger.info(f'set_clock - user:{user.uid}')
 
@@ -88,7 +88,7 @@ async def set_clock(user: AuthorisedOperator, s: ClockSetModel) -> str:
     return JSONify.as_jdict(clock.now())
 
 
-@router.patch('/time/run', tags=[Tags.Time])
+@router.patch('/run')
 async def run_clock(user: AuthorisedOperator) -> str:
     logger.info(f'run_clock  - user:{user.uid}')
 
@@ -99,7 +99,7 @@ async def run_clock(user: AuthorisedOperator) -> str:
     return JSONify.as_jdict(clock.now())
 
 
-@router.patch('/time/reload', tags=[Tags.Time])
+@router.patch('/reload')
 async def reload_clock(user: AuthorisedOperator) -> str:
     logger.info(f'reload_clock  - user:{user.uid}')
 
@@ -114,7 +114,7 @@ async def reload_clock(user: AuthorisedOperator) -> str:
     return JSONify.as_jdict(clock.now())
 
 
-@router.delete('/time/delete', tags=[Tags.Time])
+@router.delete('/delete')
 async def delete_conf(user: AuthorisedOperator) -> str:
     logger.info(f'delete_conf  - user:{user.uid}')
 
@@ -127,7 +127,7 @@ async def delete_conf(user: AuthorisedOperator) -> str:
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.websocket('/time/conf/subscribe')
+@router.websocket('/conf/subscribe')
 async def subscribe_conf(socket: WebSocket):
     logger.info(f'subscribe_conf  - socket:{hash(socket)}')
 

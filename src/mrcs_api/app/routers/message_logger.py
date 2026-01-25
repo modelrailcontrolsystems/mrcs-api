@@ -34,14 +34,14 @@ logger = Logging.getLogger()
 
 logger.info(f'starting')
 
-router = APIRouter()
+router = APIRouter(prefix='/mlg', tags=[Tags.Messages])
 
 recorder_node = MessageRecorderNode.construct(env.ops_mode)
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.get('/mlg/latest', tags=[Tags.Messages])
+@router.get('/latest')
 async def latest_messages(user: AuthorisedObserver, limit: int = 10) -> List[MessageRecordModel]:
     logger.info(f'latest_messages - user:{user.uid} limit:{limit}')
     records = list(recorder_node.find_latest(limit))
