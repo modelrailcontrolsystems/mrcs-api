@@ -13,6 +13,7 @@ from mrcs_control.operations.operation_mode import OperationService
 from mrcs_control.operations.time.clock_manager_node import ClockManagerNode
 
 from mrcs_core.data.equipment_identity import EquipmentIdentifier, EquipmentFilter, EquipmentType
+from mrcs_core.data.json import JSONify
 from mrcs_core.messaging.message import Message
 from mrcs_core.messaging.routing_key import SubscriptionRoutingKey, PublicationRoutingKey
 from mrcs_core.operations.time.clock import Clock
@@ -52,10 +53,12 @@ class TimeControllerNode(AsyncSubscriberNode):
     # ----------------------------------------------------------------------------------------------------------------
 
     def handle_startup(self):
+        self.logger.info('handle_startup')
         self.__is_running = True
 
 
     def handle_message(self, message: Message):
+        self.logger.info(f'handle_message: {JSONify.as_jdict(message)}')
         self.client_handler(message)
 
 
