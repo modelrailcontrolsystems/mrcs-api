@@ -36,12 +36,12 @@ logger = Logging.getLogger()
 
 logger.info('starting')
 
-router = APIRouter()
+router = APIRouter(prefix='/user', tags=[Tags.Users])
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.get('/user/find_all', tags=[Tags.Users])
+@router.get('/find_all')
 async def find_all(user: AuthorisedAdmin) -> List[UserModel]:
     logger.info(f'find_all - user:{user.uid}')
     users = list(PersistentUser.find_all())
@@ -49,7 +49,7 @@ async def find_all(user: AuthorisedAdmin) -> List[UserModel]:
     return JSONify.as_jdict(users)
 
 
-@router.get('/user/find/{uid}', tags=[Tags.Users])
+@router.get('/find/{uid}')
 async def find_user(user: AuthorisedAdmin, uid: str) -> UserModel | None:
     logger.info(f'find_user - user:{user.uid}: uid:{uid}')
     user = PersistentUser.find(uid)
@@ -60,14 +60,14 @@ async def find_user(user: AuthorisedAdmin, uid: str) -> UserModel | None:
     return JSONify.as_jdict(user)
 
 
-@router.get('/user/self', tags=[Tags.Users])
+@router.get('/self')
 async def find_self(user: AuthorisedUser) -> UserModel:
     logger.info(f'find_self - user: {user.uid}')
 
     return JSONify.as_jdict(user)
 
 
-@router.post('/user/create', status_code=status.HTTP_201_CREATED, tags=[Tags.Users])
+@router.post('/create', status_code=status.HTTP_201_CREATED)
 async def create(user: AuthorisedAdmin, payload: UserCreateModel) -> UserModel:
     logger.info(f'create - user:{user.uid} payload:{payload}')
 
@@ -84,7 +84,7 @@ async def create(user: AuthorisedAdmin, payload: UserCreateModel) -> UserModel:
     return JSONify.as_jdict(created)
 
 
-@router.patch('/user/update', tags=[Tags.Users])
+@router.patch('/update')
 async def update(user: AuthorisedAdmin, payload: UserUpdateModel) -> None:
     logger.info(f'update - user:{user.uid} payload:{payload}')
 
@@ -102,7 +102,7 @@ async def update(user: AuthorisedAdmin, payload: UserUpdateModel) -> None:
     user.save()
 
 
-@router.delete('/user/delete/{uid}', tags=[Tags.Users])
+@router.delete('/delete/{uid}')
 async def delete(user: AuthorisedAdmin, uid: str) -> None:
     logger.info(f'delete - user:{user.uid}: uid:{uid}')
 

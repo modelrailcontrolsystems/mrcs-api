@@ -8,7 +8,7 @@ http://127.0.0.1:8000/tst/publish
 Test publisher tool (TST) API
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, status
 
 from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import AuthorisedOperator
@@ -30,7 +30,7 @@ logger = Logging.getLogger()
 
 logger.info(f'starting')
 
-router = APIRouter()
+router = APIRouter(prefix='/tst', tags=[Tags.Messages])
 
 publisher = MQPublisher.construct_pub(env.ops_mode.value.mq_mode)
 publisher.connect()
@@ -39,7 +39,7 @@ logger.info(f'publisher:{publisher}')
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.post('/tst/publish', status_code=201, tags=[Tags.Messages])
+@router.post('/publish', status_code=status.HTTP_201_CREATED)
 async def publish(user: AuthorisedOperator, payload: MessageModel):
     logger.info(f'publish - user:{user.uid} payload:{payload}')
 
