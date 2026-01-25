@@ -25,6 +25,8 @@ from fastapi import FastAPI  # Depends,
 from mrcs_api.app.routers import (message_logger, publish_tool, session_controller, time_controller, user_admin,
                                   web_socket)
 
+from mrcs_api.app.routers.time_controller import time_controller_node
+
 from mrcs_control.db.db_client import DbClient
 from mrcs_control.sys.environment import Environment
 
@@ -57,13 +59,17 @@ logger.info(f'hostname:{hostname}')
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    logger.info('*** lifespan: part1')
-    await asyncio.sleep(5)     # Wait for MQ
+    logger.info('lifespan: part1 - start')
 
-    time_controller.time_controller_node.connect()
+    time_controller_node.connect()
+
+    while not time_controller_node.is_running:
+        await asyncio.sleep(1)
+
+    logger.info('lifespan: part1 - end')
     yield
 
-    logger.info('*** lifespan: part2')
+    logger.info('lifespan: part2')
 
 
 # --------------------------------------------------------------------------------------------------------------------
