@@ -46,16 +46,10 @@ class TimeControllerNode(AsyncSubscriberNode):
     def __init__(self, ops: OperationService, client_handler: Callable):
         super().__init__(ops)
 
-        self.__is_running = False
         self.__client_handler = client_handler
 
 
     # ----------------------------------------------------------------------------------------------------------------
-
-    def handle_startup(self):
-        self.logger.info('handle_startup')
-        self.__is_running = True
-
 
     def handle_message(self, message: Message):
         self.logger.info(f'handle_message: {JSONify.as_jdict(message)}')
@@ -63,6 +57,10 @@ class TimeControllerNode(AsyncSubscriberNode):
 
 
     # ----------------------------------------------------------------------------------------------------------------
+
+    async def connection_is_available(self):
+        await self.mq_client.connection_is_available()
+
 
     async def configure_clock(self, clock: Clock):
         self.logger.info(f'configure_clock:{clock}')
@@ -74,16 +72,5 @@ class TimeControllerNode(AsyncSubscriberNode):
     # ----------------------------------------------------------------------------------------------------------------
 
     @property
-    def is_running(self):
-        return self.__is_running
-
-
-    @property
     def client_handler(self):
         return self.__client_handler
-
-
-    # ----------------------------------------------------------------------------------------------------------------
-
-    def __str__(self, *args, **kwargs):
-        return f'TimeControllerNode:{{is_running:{self.is_running}, ops:{self.ops}, mq_client:{self.mq_client}}}'

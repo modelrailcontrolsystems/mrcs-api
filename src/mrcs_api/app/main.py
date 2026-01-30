@@ -16,7 +16,6 @@ https://fastapi.tiangolo.com/advanced/events/#lifespan
 https://dev.to/leapcell/mastering-python-async-io-with-fastapi-13e8
 """
 
-import asyncio
 import socket
 from contextlib import asynccontextmanager
 
@@ -62,9 +61,7 @@ async def lifespan(_: FastAPI):
     logger.info('lifespan: part1 - start')
 
     time_controller_node.connect()
-
-    while not time_controller_node.is_running:
-        await asyncio.sleep(1)
+    await time_controller_node.connection_is_available()
 
     logger.info('lifespan: part1 - end')
     yield
@@ -92,6 +89,6 @@ app.include_router(web_socket.router)
 # )
 
 
-@app.get("/")
+@app.get('/')
 async def root():
-    return {"id": "MRCS Web"}
+    return {"id": "MRCS API"}
