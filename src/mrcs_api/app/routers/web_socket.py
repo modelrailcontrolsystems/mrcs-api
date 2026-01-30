@@ -38,7 +38,7 @@ router = APIRouter(prefix='/ws', tags=[Tags.WebSockets])
 
 # --------------------------------------------------------------------------------------------------------------------
 
-@router.get("/")
+@router.get('')
 async def get():
     with open(os.path.join(os.path.dirname(__file__), 'public', 'test_client.html')) as f:
         html = f.read()
