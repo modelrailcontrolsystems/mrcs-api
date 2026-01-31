@@ -62,6 +62,7 @@ router = APIRouter(prefix='/time', tags=[Tags.Time])
 
 
 # --------------------------------------------------------------------------------------------------------------------
+
 @router.get('/now')
 async def now() -> str:
     logger.info(f'now')
