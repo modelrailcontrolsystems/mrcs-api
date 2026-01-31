@@ -18,3 +18,13 @@ The following services should be running continuously:
 
 ---
 
+### URLs
+
+API root:  
+http://localhost:8000/
+
+API Swagger docs:  
+http://localhost:8000/docs
+
+WebSocket test page:  
+http://localhost:8000/ws

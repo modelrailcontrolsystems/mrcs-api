@@ -70,6 +70,7 @@ async def lifespan(_: FastAPI):
 
 
 # --------------------------------------------------------------------------------------------------------------------
+
 app = FastAPI(title=__TITLE, summary=__SUMMARY, lifespan=lifespan)
 # , lifespan=lifespan, dependencies=[Depends(get_query_token)]
 
