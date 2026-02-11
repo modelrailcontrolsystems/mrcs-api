@@ -11,7 +11,6 @@ from typing import Callable
 from mrcs_control.operations.async_messaging_node import AsyncSubscriberNode
 from mrcs_control.operations.operation_mode import OperationService
 from mrcs_control.operations.time.clock_manager_node import ClockManagerNode
-
 from mrcs_core.data.equipment_identity import EquipmentIdentifier, EquipmentFilter, EquipmentType
 from mrcs_core.data.json import JSONify
 from mrcs_core.messaging.message import Message
@@ -26,6 +25,7 @@ class TimeControllerNode(AsyncSubscriberNode):
     a messaging node that subscribes to, and can publish, clock configurations
     """
 
+
     @classmethod
     def id(cls):
         return EquipmentIdentifier(EquipmentType.API, None, 1)
@@ -33,7 +33,7 @@ class TimeControllerNode(AsyncSubscriberNode):
 
     @classmethod
     def subscription_routing_keys(cls):
-        return (SubscriptionRoutingKey(ClockManagerNode.id(), EquipmentFilter.any()), )
+        return (SubscriptionRoutingKey(ClockManagerNode.id(), EquipmentFilter.any()),)
 
 
     @classmethod
