@@ -20,15 +20,13 @@ RESOURCES
 """
 
 import logging
-import os
 import sys
 
 import uvicorn
 
 from mrcs_api.cli.args.uvicorn_args import UvicornArgs
-
 from mrcs_control.sys.environment import Environment
-
+from mrcs_core.sys.env_paths import EnvPaths
 from mrcs_core.sys.logging import Logging
 
 
@@ -47,11 +45,9 @@ if __name__ == '__main__':
 
     Environment.set(args.mode)
 
-
     # ----------------------------------------------------------------------------------------------------------------
 
-    pieces = __file__.split(os.sep)
-    watched = os.sep.join(pieces[:-3])
+    watched = EnvPaths.mrcs()
 
     if args.reload:
         logger.info(f'watched: {watched}')
