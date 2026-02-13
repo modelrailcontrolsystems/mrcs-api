@@ -11,10 +11,10 @@ from typing import Callable
 from mrcs_control.operations.async_messaging_node import AsyncSubscriberNode
 from mrcs_control.operations.operation_mode import OperationService
 from mrcs_control.operations.time.clock_manager_node import ClockManagerNode
-from mrcs_core.data.equipment_identity import EquipmentIdentifier, EquipmentFilter, EquipmentType
+from mrcs_core.data.equipment_identity import EquipmentFilter, EquipmentIdentifier, EquipmentType
 from mrcs_core.data.json import JSONify
 from mrcs_core.messaging.message import Message
-from mrcs_core.messaging.routing_key import SubscriptionRoutingKey, PublicationRoutingKey
+from mrcs_core.messaging.routing_key import PublicationRoutingKey, SubscriptionRoutingKey
 from mrcs_core.operations.time.clock import Clock
 
 
@@ -56,8 +56,8 @@ class TimeControllerNode(AsyncSubscriberNode):
 
         try:
             Clock.construct_from_jdict(message.body)
-        except Exception as ex:
-            self.logger.warning(f'{ex}: invalid message body:{message.body}')
+        except Exception:
+            self.logger.warning(f'invalid message body:{message.body}')
             return
 
         self.client_handler(message)
