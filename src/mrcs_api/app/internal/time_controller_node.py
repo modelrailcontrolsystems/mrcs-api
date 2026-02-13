@@ -56,8 +56,8 @@ class TimeControllerNode(AsyncSubscriberNode):
 
         try:
             Clock.construct_from_jdict(message.body)
-        except (TypeError, ValueError):
-            self.logger.warning(f'invalid message body:{message.body}')
+        except Exception as ex:
+            self.logger.warning(f'{ex}: invalid message body:{message.body}')
             return
 
         self.client_handler(message)
