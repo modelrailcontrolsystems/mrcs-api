@@ -19,7 +19,6 @@ mrcs_uvicorn -t -v -r
 RESOURCES
 """
 
-import logging
 import sys
 
 import uvicorn
@@ -38,7 +37,7 @@ if __name__ == '__main__':
 
     args = UvicornArgs('a launcher for the Uvicorn ASGI web server')
 
-    Logging.config('mrcs_uvicorn', level=logging.INFO)
+    Logging.config('mrcs_uvicorn', verbose=args.verbose)
     logger = Logging.getLogger()
     logger.info(f'args: {args}')
     logger.info(f'mode: {args.mode.value}')
