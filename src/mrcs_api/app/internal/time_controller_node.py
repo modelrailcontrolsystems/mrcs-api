@@ -53,6 +53,13 @@ class TimeControllerNode(AsyncSubscriberNode):
 
     def handle_message(self, message: Message):
         self.logger.info(f'handle_message: {JSONify.as_jdict(message)}')
+
+        try:
+            Clock.construct_from_jdict(message.body)
+        except (TypeError, ValueError):
+            self.logger.warning(f'invalid message body:{message.body}')
+            return
+
         self.client_handler(message)
 
 
