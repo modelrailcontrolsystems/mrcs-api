@@ -15,8 +15,9 @@ from fastapi import APIRouter, status
 from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import PasswordRequestForm
 from mrcs_api.exceptions import InvalidCredentials400Exception
+from mrcs_api.models.token import TokenModel
 from mrcs_api.models.user import APIUser
-from mrcs_api.security.token import TokenModel, APIJWT
+from mrcs_api.security.token import APIJWT
 from mrcs_api.security.token_timeout import TokenTimeout
 from mrcs_control.sys.environment import Environment
 from mrcs_core.sys.host import Host

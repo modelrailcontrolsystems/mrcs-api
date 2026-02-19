@@ -8,21 +8,13 @@ A JSON Web Token (JWT) carrying scopes
 https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/#verify-the-scopes
 """
 
-from datetime import timedelta, datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 import jwt
-from pydantic import BaseModel
 
+from mrcs_api.models.token import TokenModel
 from mrcs_api.models.user import APIUser
-
 from mrcs_core.security.token import AccessToken, JWT, TokenData
-
-
-# --------------------------------------------------------------------------------------------------------------------
-
-class TokenModel(BaseModel):
-    access_token: str
-    token_type: str
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -31,6 +23,7 @@ class APIJWT(JWT):
     """
     A JSON Web Token (JWT), carrying scopes
     """
+
 
     # ----------------------------------------------------------------------------------------------------------------
 
