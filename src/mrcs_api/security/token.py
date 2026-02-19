@@ -12,6 +12,7 @@ from datetime import datetime, timedelta, timezone
 
 import jwt
 
+from mrcs_api.models.token import TokenModel
 from mrcs_api.models.user import APIUser
 from mrcs_core.security.token import AccessToken, JWT, TokenData
 
