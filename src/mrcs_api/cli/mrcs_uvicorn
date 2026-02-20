@@ -11,12 +11,10 @@ DESCRIPTION
 A launcher for the Uvicorn ASGI web server
 
 SYNOPSIS
-mrcs_uvicorn [-h] [-i INDENT] [-v] [--version] [-t] [-r]
+mrcs_uvicorn [-h] [-i INDENT] [-v] [--version] [-t] [-p PORT] [-r]
 
 EXAMPLES
 mrcs_uvicorn -t -v -r
-
-RESOURCES
 """
 
 import sys
@@ -46,13 +44,13 @@ if __name__ == '__main__':
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    watched = EnvPaths.mrcs()
-
-    if args.reload:
-        logger.info(f'watched: {watched}')
-
     try:
-        uvicorn.run('mrcs_api.app.main:app', host='0.0.0.0', reload=args.reload, reload_dirs=[watched])
+        if args.reload:
+            watched = EnvPaths.mrcs()
+            logger.info(f'watched: {watched}')
+            uvicorn.run('mrcs_api.app.main:app', host='0.0.0.0', port=args.port, reload=True, reload_dirs=[watched])
+        else:
+            uvicorn.run('mrcs_api.app.main:app', host='0.0.0.0', port=args.port)
 
 
     # ----------------------------------------------------------------------------------------------------------------

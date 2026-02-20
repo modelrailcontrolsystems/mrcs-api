@@ -14,22 +14,24 @@ https://fastapi.tiangolo.com/tutorial/bigger-applications/#an-example-file-struc
 https://github.com/fastapi/fastapi/discussions/6055
 https://fastapi.tiangolo.com/advanced/events/#lifespan
 https://dev.to/leapcell/mastering-python-async-io-with-fastapi-13e8
+https://medium.com/@alyshapm10/half-a-stack-integrating-react-app-with-fastapi-part-1-2-81cff4cbd7bf
 """
 
 import socket
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI  # Depends,
+from fastapi.middleware.cors import CORSMiddleware
 
 from mrcs_api.app.routers import (message_logger, publish_tool, session_controller, time_controller, user_admin,
                                   web_socket)
-
 from mrcs_api.app.routers.time_controller import time_controller_node
-
 from mrcs_control.db.db_client import DbClient
 from mrcs_control.sys.environment import Environment
-
+from mrcs_core.sys.host import Host
 from mrcs_core.sys.logging import Logging
+from mrcs_core.sys.server import Server
+
 
 # from .dependencies import get_query_token, get_token_header
 # from .internal import admin
@@ -49,6 +51,9 @@ logger = Logging.getLogger()
 logger.info(f'starting: {env}')
 
 DbClient.set_client_db_mode(env.ops_mode.value.db_mode)
+
+web_server = Server.load(Host, name='web')
+logger.info(f'web_server:{web_server}')
 
 hostname = socket.gethostname()
 logger.info(f'hostname:{hostname}')
@@ -74,12 +79,27 @@ async def lifespan(_: FastAPI):
 app = FastAPI(title=__TITLE, summary=__SUMMARY, lifespan=lifespan)
 # , lifespan=lifespan, dependencies=[Depends(get_query_token)]
 
+if web_server:
+    origins = [
+        web_server.base_url,
+        web_server.authority,
+    ]
+
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
 app.include_router(message_logger.router)
 app.include_router(publish_tool.router)
 app.include_router(session_controller.router)
 app.include_router(time_controller.router)
 app.include_router(user_admin.router)
 app.include_router(web_socket.router)
+
 
 # app.include_router(
 #     admin.router,
