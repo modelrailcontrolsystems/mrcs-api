@@ -15,6 +15,9 @@ mrcs_token_timeout [-h] [-i INDENT] [-v] [--version] [-s HOURS MINUTES]
 
 EXAMPLES
 mrcs_token_timeout -s 2 0
+
+FILES
+~/MRCS/conf/token_timeout.json
 """
 
 import logging
@@ -22,10 +25,8 @@ import sys
 
 from mrcs_api.cli.args.token_timeout_args import TokenTimeoutArgs
 from mrcs_api.security.token_timeout import TokenTimeout
-
 from mrcs_core.data.json import JSONify
 from mrcs_core.sys.host import Host
-
 from mrcs_core.sys.logging import Logging
 
 
@@ -40,7 +41,6 @@ if __name__ == '__main__':
     Logging.config('mrcs_token_timeout', level=logging.INFO)
     logger = Logging.getLogger()
     logger.info(f'args: {args}')
-
 
     # ----------------------------------------------------------------------------------------------------------------
 

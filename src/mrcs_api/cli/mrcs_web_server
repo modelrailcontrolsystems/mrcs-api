@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+
+"""
+Created on 20 Feb 2026
+
+@author: Bruno Beloff (bbeloff@me.com)
+
+source repo: mrcs_api
+
+DESCRIPTION
+Configure the API server for the MRCS web server base URL. Required for CORS settings.
+
+SYNOPSIS
+mrcs_web_server [-h] [-i INDENT] [-v] [--version] [-s HOST PORT IS_SECURE]
+
+EXAMPLES
+mrcs_web_server -v -i4 -s localhost 5173 0
+
+DOCUMENT EXAMPLE
+{
+    "host": "localhost",
+    "port": 5173,
+    "is_secure": false
+}
+
+FILES
+~/MRCS/conf/web_server.json
+"""
+
+from mrcs_api.cli.args.server_args import ServerArgs
+from mrcs_core.data.json import JSONify
+from mrcs_core.sys.host import Host
+from mrcs_core.sys.logging import Logging
+from mrcs_core.sys.server import Server
+
+
+# --------------------------------------------------------------------------------------------------------------------
+
+if __name__ == '__main__':
+
+    name = 'web'
+    publisher = None
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    args = ServerArgs('configure the API server for the MRCS web server base URL')
+
+    Logging.config('mrcs_web_server', verbose=args.verbose)
+    logger = Logging.getLogger()
+    logger.info(f'args: {args}')
+
+    if not args.is_valid():
+        logger.error('invalid parameter(s)')
+        exit(2)
+
+    # ----------------------------------------------------------------------------------------------------------------
+
+    if args.do_set:
+        server = Server(args.host, args.port, args.is_secure, name=name)
+        server.save(Host)
+
+    server = Server.load(Host, name=name)
+    print(JSONify.dumps(server, indent=args.indent))
