@@ -8,17 +8,15 @@ https://fastapi.tiangolo.com/tutorial/testing/#using-testclient
 """
 
 import json
-import os
 import unittest
+from pathlib import Path
 
 from fastapi.testclient import TestClient
 
 from mrcs_api.app.main import app
 from mrcs_api.test_setup import TestSetup
-
 from mrcs_control.admin.user.persistent_user import PersistentUser
 from mrcs_control.db.db_client import DbClient
-
 from mrcs_core.admin.user.user import User
 from mrcs_core.data.json import JSONify
 from mrcs_core.security.token import JWT
@@ -27,8 +25,8 @@ from mrcs_core.security.token import JWT
 # --------------------------------------------------------------------------------------------------------------------
 
 class TestUserAdmin(unittest.TestCase):
-
     token: JWT = None
+
 
     @classmethod
     def setUpClass(cls):
@@ -160,7 +158,7 @@ class TestUserAdmin(unittest.TestCase):
 
     @classmethod
     def __load_user(cls, rel_filename):
-        abs_filename = os.path.join(os.path.dirname(__file__), 'data', rel_filename)
+        abs_filename = Path(__file__).parent / 'data' / rel_filename
         with open(abs_filename) as fp:
             jdict = json.load(fp)
 
@@ -171,13 +169,13 @@ class TestUserAdmin(unittest.TestCase):
     def __setup_db(cls):
         PersistentUser.recreate_tables()
 
-        abs_filename = os.path.join(os.path.dirname(__file__), 'data', 'new_user1.json')
+        abs_filename = Path(__file__).parent / 'data' / 'new_user1.json'
         with open(abs_filename) as fp:
             jdict = json.load(fp)
         obj1 = PersistentUser.construct_from_jdict(jdict)
         obj1 = obj1.save(password='pass')
 
-        abs_filename = os.path.join(os.path.dirname(__file__), 'data', 'new_user2.json')
+        abs_filename = Path(__file__).parent / 'data' / 'new_user2.json'
         with open(abs_filename) as fp:
             jdict = json.load(fp)
         obj2 = PersistentUser.construct_from_jdict(jdict)

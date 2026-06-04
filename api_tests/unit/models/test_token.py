@@ -7,16 +7,13 @@ https://fastapi.tiangolo.com/tutorial/testing/#extended-fastapi-app-file
 """
 
 import json
-import os
 import unittest
-
 from datetime import timedelta
+from pathlib import Path
 
 from mrcs_api.models.user import APIUser
 from mrcs_api.security.token import APIJWT
-
 from mrcs_control.db.db_client import DbClient
-
 from mrcs_core.security.token import TokenData
 
 
@@ -26,6 +23,7 @@ class TestToken(unittest.TestCase):
 
     def tearDown(self):
         DbClient.kill_all()
+
 
     def test_construct(self):
         user = self.__load_user('saved_user.json')
@@ -72,12 +70,12 @@ class TestToken(unittest.TestCase):
 
     @classmethod
     def __load_user(cls, rel_filename):
-        abs_filename = os.path.join(os.path.dirname(__file__), 'data', rel_filename)
+        abs_filename = Path(__file__).parent / 'data' / rel_filename
         with open(abs_filename) as fp:
             jdict = json.load(fp)
 
         return APIUser.construct_from_jdict(jdict)
 
 
-if __name__ == "__main_":
+if __name__ == "__main__":
     unittest.main()

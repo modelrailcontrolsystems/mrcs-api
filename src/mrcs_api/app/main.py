@@ -85,6 +85,7 @@ if web_server:
         web_server.authority,
     ]
 
+    # noinspection PyTypeChecker
     app.add_middleware(
         CORSMiddleware,
         allow_origins=origins,

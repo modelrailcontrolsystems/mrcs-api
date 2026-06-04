@@ -11,10 +11,10 @@ DESCRIPTION
 A launcher for the Uvicorn ASGI web server
 
 SYNOPSIS
-mrcs_uvicorn [-h] [-i INDENT] [-v] [--version] [-t] [-p PORT] [-r]
+mrcs_api_uvicorn [-h] [-i INDENT] [-v] [--version] [-t] [-p PORT] [-r]
 
 EXAMPLES
-mrcs_uvicorn -t -v -r
+mrcs_api_uvicorn -t -v -r
 """
 
 import sys
@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     args = UvicornArgs('a launcher for the Uvicorn ASGI web server')
 
-    Logging.config('mrcs_uvicorn', verbose=args.verbose)
+    Logging.config('mrcs_api_uvicorn', verbose=args.verbose)
     logger = Logging.getLogger()
     logger.info(f'args: {args}')
     logger.info(f'mode: {args.mode.value}')

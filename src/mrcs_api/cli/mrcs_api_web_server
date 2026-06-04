@@ -11,10 +11,10 @@ DESCRIPTION
 Configure the API server for the MRCS web server base URL. Required for CORS settings.
 
 SYNOPSIS
-mrcs_web_server [-h] [-i INDENT] [-v] [--version] [-s HOST PORT IS_SECURE]
+mrcs_api_web_server [-h] [-i INDENT] [-v] [--version] [-s HOST PORT IS_SECURE]
 
 EXAMPLES
-mrcs_web_server -v -i4 -s localhost 5173 0
+mrcs_api_web_server -v -i4 -s localhost 5173 0
 
 DOCUMENT EXAMPLE
 {
@@ -43,9 +43,9 @@ if __name__ == '__main__':
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    args = ServerArgs('configure the API server for the MRCS web server base URL')
+    args = ServerArgs('configure the API server with the MRCS web server base URL')
 
-    Logging.config('mrcs_web_server', verbose=args.verbose)
+    Logging.config('mrcs_api_web_server', verbose=args.verbose)
     logger = Logging.getLogger()
     logger.info(f'args: {args}')
 

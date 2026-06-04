@@ -11,15 +11,13 @@ https://fastapi.tiangolo.com/advanced/websockets/#await-for-messages-and-send-me
 https://betterstack.com/community/guides/scaling-python/fastapi-websockets/
 """
 
-import os
+from pathlib import Path
 
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
 from mrcs_api.app.internal.tags import Tags
-
 from mrcs_control.sys.environment import Environment
-
 from mrcs_core.sys.host import Host
 from mrcs_core.sys.logging import Logging
 
@@ -40,7 +38,7 @@ router = APIRouter(prefix='/ws', tags=[Tags.WebSockets])
 
 @router.get('')
 async def get():
-    with open(os.path.join(os.path.dirname(__file__), 'public', 'test_client.html')) as f:
+    with open(Path(__file__).parent / 'public' / 'test_client.html') as f:
         html = f.read()
 
     hostname = Host.name()

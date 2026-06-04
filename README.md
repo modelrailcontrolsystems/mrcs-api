@@ -17,7 +17,7 @@ Requires MRCS repos:
 
 The following services should be running continuously:
 
-* `mrcs_uvicorn --verbose --reload --test &`
+* `mrcs_api_uvicorn --verbose --reload --test &`
 
 ---
 
