@@ -39,7 +39,7 @@ async def session_user(required: SecurityScopes, encoded_token: EncodedToken) ->
     # TODO: (temporary) check if token scopes == user.scopes
 
     if not set(required.scopes).issubset(user.scopes()):
-        raise Scope401Exception(f'required:{required.scopes} user:{user.scopes}')
+        raise Scope401Exception(f'required:{required.scopes} user:{user.scopes()}')
 
     return user
 
