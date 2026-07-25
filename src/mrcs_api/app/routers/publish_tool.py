@@ -14,10 +14,8 @@ from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import AuthorisedOperator
 from mrcs_api.exceptions import BadRequest400Exception, NotAcceptable406Exception
 from mrcs_api.models.message import APIMessage, MessageModel
-
 from mrcs_control.messaging.mq_client import MQPublisher
 from mrcs_control.sys.environment import Environment
-
 from mrcs_core.sys.logging import Logging
 
 
@@ -45,8 +43,8 @@ async def publish(user: AuthorisedOperator, payload: MessageModel):
 
     try:
         message = APIMessage.construct_from_payload(payload)
-    except ValueError as ex:
-        raise BadRequest400Exception(f'publish: {ex}')
+    except ValueError as exc:
+        raise BadRequest400Exception(f'publish: {exc}')
 
     if not message:
         raise NotAcceptable406Exception('publish: malformed payload')

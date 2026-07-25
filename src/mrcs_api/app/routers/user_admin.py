@@ -17,12 +17,10 @@ from fastapi import APIRouter, status
 
 from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import AuthorisedAdmin, AuthorisedUser
-from mrcs_api.exceptions import Conflict409Exception, NotFound404Exception, BadRequest400Exception
-from mrcs_api.models.user import APIUser, UserCreateModel, UserUpdateModel, UserModel
-
+from mrcs_api.exceptions import BadRequest400Exception, Conflict409Exception, NotFound404Exception
+from mrcs_api.models.user import APIUser, UserCreateModel, UserModel, UserUpdateModel
 from mrcs_control.admin.user.persistent_user import PersistentUser
 from mrcs_control.sys.environment import Environment
-
 from mrcs_core.data.json import JSONify
 from mrcs_core.sys.logging import Logging
 
@@ -73,8 +71,8 @@ async def create(user: AuthorisedAdmin, payload: UserCreateModel) -> UserModel:
 
     try:
         user = APIUser.construct_from_create_payload(payload)
-    except ValueError as ex:
-        raise BadRequest400Exception(f'create: {ex}')
+    except ValueError as exc:
+        raise BadRequest400Exception(f'create: {exc}')
 
     if PersistentUser.email_user(user.email):
         raise Conflict409Exception(f'create: email {user.email} already in use')
@@ -90,8 +88,8 @@ async def update(user: AuthorisedAdmin, payload: UserUpdateModel) -> None:
 
     try:
         user = APIUser.construct_from_update_payload(payload)
-    except ValueError as ex:
-        raise BadRequest400Exception(f'update: {ex}')
+    except ValueError as exc:
+        raise BadRequest400Exception(f'update: {exc}')
 
     if not PersistentUser.exists(user.uid):
         raise NotFound404Exception(f'update: user {user.uid} not found')
@@ -108,5 +106,5 @@ async def delete(user: AuthorisedAdmin, uid: str) -> None:
 
     try:
         PersistentUser.delete(uid)
-    except RuntimeError as ex:
-        raise Conflict409Exception(f'delete: {ex}')
+    except RuntimeError as exc:
+        raise Conflict409Exception(f'delete: {exc}')

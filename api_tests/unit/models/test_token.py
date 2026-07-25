@@ -41,8 +41,8 @@ class TestToken(unittest.TestCase):
 
         try:
             APIJWT.construct(user, delta)
-        except ValueError as ex:
-            assert str(ex) == 'the user must have a valid uid'
+        except ValueError as exc:
+            assert str(exc) == 'the user must have a valid uid'
 
 
     def test_encoded(self):
