@@ -25,8 +25,6 @@ from mrcs_core.security.token import JWT
 # --------------------------------------------------------------------------------------------------------------------
 
 class TestUserAdmin(unittest.TestCase):
-    token: JWT = None
-
 
     @classmethod
     def setUpClass(cls):
@@ -37,8 +35,7 @@ class TestUserAdmin(unittest.TestCase):
         self.__setup_db()
         self.__client = TestClient(app)
 
-        if self.token is None:
-            self.token = self.__authorise()
+        self.token = self.__authorise()
 
 
     def tearDown(self):

@@ -14,9 +14,7 @@ from fastapi.testclient import TestClient
 
 from mrcs_api.app.main import app
 from mrcs_api.app.routers.time_controller import time_controller_node
-
 from mrcs_control.db.db_client import DbClient
-
 from mrcs_core.data.iso_datetime import ISODatetime
 from mrcs_core.operations.time.clock import Clock
 from mrcs_core.security.token import JWT
@@ -26,13 +24,13 @@ from mrcs_core.security.token import JWT
 
 class TestTime(unittest.TestCase):
 
-    token: JWT = None
+    # token: JWT | None = None
+
 
     def setUp(self):
         self.__client = TestClient(app)
 
-        if self.token is None:
-            self.token = self.__authorise()
+        self.token = self.__authorise()
 
 
     def tearDown(self):
@@ -80,6 +78,7 @@ class TestTime(unittest.TestCase):
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
+
 
     async def test_delete(self):
         await time_controller_node.connect()
