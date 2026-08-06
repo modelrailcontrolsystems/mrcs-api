@@ -18,10 +18,8 @@ from mrcs_api.app.internal.time_controller_node import TimeControllerNode
 from mrcs_api.app.internal.web_socket_manager import WebSocketManager
 from mrcs_api.app.security.authorisation import AuthorisedOperator
 from mrcs_api.exceptions import Conflict409Exception
-from mrcs_api.models.time import ClockSetModel, ClockConfModel
-
+from mrcs_api.models.time import ClockConfModel, ClockSetModel
 from mrcs_control.sys.environment import Environment
-
 from mrcs_core.data.json import JSONify
 from mrcs_core.messaging.message import Message
 from mrcs_core.operations.time.clock import Clock
@@ -55,7 +53,7 @@ logger.info(f'starting')
 ws_manager = WebSocketManager()
 logger.info(f'ws_manager:{ws_manager}')
 
-time_controller_node = TimeControllerNode(env.ops_mode.value, handler)
+time_controller_node = TimeControllerNode(env.queuing.value, handler)
 logger.info(f'time_controller_node:{time_controller_node}')
 
 router = APIRouter(prefix='/time', tags=[Tags.Time])
