@@ -8,8 +8,9 @@ A messaging node that subscribes to, and can publish, clock configurations
 
 from typing import Callable
 
+from mrcs_control.messaging.mq_enums import MQTopology
 from mrcs_control.operations.async_messaging_node import AsyncSubscriberNode
-from mrcs_control.operations.operation_mode import OperationService
+from mrcs_control.operations.node_enums import NodeTopology
 from mrcs_control.operations.time.clock_manager_node import ClockManagerNode
 from mrcs_core.data.equipment_identity import EquipmentFilter, EquipmentIdentifier, EquipmentType
 from mrcs_core.data.json import JSONify
@@ -43,8 +44,8 @@ class TimeControllerNode(AsyncSubscriberNode):
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    def __init__(self, ops: OperationService, client_handler: Callable):
-        super().__init__(ops)
+    def __init__(self, ops: NodeTopology.ServiceConfiguration, client_handler: Callable):
+        super().__init__(ops, MQTopology.SINGLE)
 
         self.__client_handler = client_handler
 

@@ -50,7 +50,7 @@ Logging.config(env.log_name + ': main', level=env.log_level)
 logger = Logging.getLogger()
 logger.info(f'starting: {env}')
 
-DbClient.set_client_db_mode(env.ops_mode.value.db_mode)
+DbClient.set_client_db_mode(env.queuing.value.db_mode)
 
 web_server = Server.load(Host, name='web')
 logger.info(f'web_server:{web_server}')

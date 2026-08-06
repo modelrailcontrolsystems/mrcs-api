@@ -30,7 +30,7 @@ logger.info(f'starting')
 
 router = APIRouter(prefix='/tst', tags=[Tags.Messages])
 
-publisher = MQPublisher.construct_pub(env.ops_mode.value.mq_mode)
+publisher = MQPublisher.construct_pub(env.queuing.value.mq_mode)
 publisher.connect()
 logger.info(f'publisher:{publisher}')
 

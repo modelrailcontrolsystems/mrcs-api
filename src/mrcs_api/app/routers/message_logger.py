@@ -17,10 +17,8 @@ from fastapi import APIRouter
 from mrcs_api.app.internal.tags import Tags
 from mrcs_api.app.security.authorisation import AuthorisedObserver
 from mrcs_api.models.message import MessageRecordModel
-
 from mrcs_control.operations.recorder.message_recorder_node import MessageRecorderNode
 from mrcs_control.sys.environment import Environment
-
 from mrcs_core.data.json import JSONify
 from mrcs_core.sys.logging import Logging
 
@@ -28,7 +26,7 @@ from mrcs_core.sys.logging import Logging
 # --------------------------------------------------------------------------------------------------------------------
 
 env = Environment.get()
-
+print(f'env:{env}')
 Logging.config(env.log_name + ': message_logger', level=env.log_level)
 logger = Logging.getLogger()
 
@@ -36,7 +34,7 @@ logger.info(f'starting')
 
 router = APIRouter(prefix='/mlg', tags=[Tags.Messages])
 
-recorder_node = MessageRecorderNode.construct(env.ops_mode)
+recorder_node = MessageRecorderNode(env.queuing.ServiceConfiguration)
 
 
 # --------------------------------------------------------------------------------------------------------------------
