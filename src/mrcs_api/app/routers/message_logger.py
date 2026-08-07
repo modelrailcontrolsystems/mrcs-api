@@ -34,7 +34,7 @@ logger.info(f'starting')
 
 router = APIRouter(prefix='/mlg', tags=[Tags.Messages])
 
-recorder_node = MessageRecorderNode(env.queuing.ServiceConfiguration)
+recorder_node = MessageRecorderNode(env.queuing.value)
 
 
 # --------------------------------------------------------------------------------------------------------------------
