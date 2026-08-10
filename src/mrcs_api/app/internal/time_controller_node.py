@@ -8,9 +8,9 @@ A messaging node that subscribes to, and can publish, clock configurations
 
 from typing import Callable
 
-from mrcs_control.messaging.mq_enums import MQTopology
+from mrcs_control.messaging.mq_topology import MQTopology
 from mrcs_control.operations.async_messaging_node import AsyncSubscriberNode
-from mrcs_control.operations.node_enums import NodeTopology
+from mrcs_control.operations.node_topology import NodeTopology
 from mrcs_control.operations.time.clock_manager_node import ClockManagerNode
 from mrcs_core.data.equipment_identity import EquipmentFilter, EquipmentIdentifier, EquipmentType
 from mrcs_core.data.json import JSONify
