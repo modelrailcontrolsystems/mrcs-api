@@ -10,9 +10,7 @@ https://fastapi.tiangolo.com/tutorial/testing/#using-testclient
 import unittest
 
 from mrcs_api.security.scope import Scope, ScopeDescription
-
-from mrcs_control.db.db_client import DbClient
-
+from mrcs_api.test.test_helper import TestHelper
 from mrcs_core.admin.user.user import UserRole
 
 
@@ -20,8 +18,15 @@ from mrcs_core.admin.user.user import UserRole
 
 class TestSession(unittest.TestCase):
 
-    def tearDown(self):
-        DbClient.kill_all()
+    @classmethod
+    def setUpClass(cls):
+        TestHelper.dbSetup()
+
+
+    @classmethod
+    def tearDownClass(cls):
+        TestHelper.dbTeardown()
+
 
     def test_list_scopes(self):
         scopes = list(Scope.keys())
@@ -48,4 +53,3 @@ class TestSession(unittest.TestCase):
 
         scopes = Scope.keys_for_role(UserRole.OBSERVER)
         assert scopes == {'OBSERVE', }
-

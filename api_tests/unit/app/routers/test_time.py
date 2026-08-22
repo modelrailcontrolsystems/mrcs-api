@@ -10,81 +10,81 @@ https://fastapi.tiangolo.com/tutorial/testing/#using-testclient
 import json
 import unittest
 
-from fastapi.testclient import TestClient
+import httpx
 
 from mrcs_api.app.main import app
-from mrcs_api.app.routers.time_controller import time_controller_node
+from mrcs_api.test.test_helper import TestHelper
 from mrcs_control.db.db_client import DbClient
 from mrcs_core.data.iso_datetime import ISODatetime
 from mrcs_core.operations.time.clock import Clock
 from mrcs_core.security.token import JWT
+from mrcs_core.sys.host import Host
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class TestTime(unittest.TestCase):
+class TestTime(unittest.IsolatedAsyncioTestCase):
 
-    # token: JWT | None = None
-
-
-    def setUp(self):
-        self.__client = TestClient(app)
-
-        self.token = self.__authorise()
+    @classmethod
+    def setUpClass(cls):
+        TestHelper.dbSetup()
 
 
-    def tearDown(self):
+    @classmethod
+    def tearDownClass(cls):
+        Clock.delete(Host)
+        TestHelper.dbTeardown()
+
+
+    async def asyncSetUp(self):
+        self.__transport = httpx.ASGITransport(app=app)
+        self.__client = httpx.AsyncClient(transport=self.__transport, base_url="http://test", follow_redirects=True)
+
+        self.token = await self.__authorise()
+
+
+    async def asyncTearDown(self):
+        await self.__client.aclose()
         DbClient.kill_all()
 
 
     async def test_now(self):
-        await time_controller_node.connect()
-
-        response = self.__client.get('/time/now/')
+        response = await self.__client.get('/time/now/')
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
 
 
     async def test_conf(self):
-        await time_controller_node.connect()
-
-        response = self.__client.get('/time/conf/')
+        response = await self.__client.get('/time/conf/')
         assert response.status_code == 200
         conf = Clock.construct_from_jdict(response.json())
         assert conf is not None
 
 
     async def test_set(self):
-        await time_controller_node.connect()
-
         headers = self.token.as_header()
         conf = {'is_running': True, 'speed': 4, 'year': 2025, 'month': 1, 'day': 2, 'hour': 6}
-        response = self.__client.put('/time/set/', headers=headers, json=conf)
+        response = await self.__client.put('/time/set/', headers=headers, json=conf)
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
 
 
     async def test_run(self):
-        await time_controller_node.connect()
+        clock = Clock.set(False, 4, 2025, 1, 2, 6)
+        clock.save(Host)
 
         headers = self.token.as_header()
-        conf = {'is_running': True, 'speed': 4, 'year': 2025, 'month': 1, 'day': 2, 'hour': 6}
-        response = self.__client.put('/time/set/', headers=headers, json=conf)
-        assert response.status_code == 200
-
-        response = self.__client.patch('/time/run/', headers=headers)
+        response = await self.__client.patch('/time/run/', headers=headers)
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
 
 
     async def test_delete(self):
-        await time_controller_node.connect()
-
         headers = self.token.as_header()
-        response = self.__client.delete('/time/delete/', headers=headers)
+        response = await self.__client.delete('/time/delete/', headers=headers)
         assert response.status_code == 200
         now = ISODatetime.construct_from_jdict(response.json())
         assert now is not None
@@ -92,8 +92,8 @@ class TestTime(unittest.TestCase):
 
     # ----------------------------------------------------------------------------------------------------------------
 
-    def __authorise(self) -> JWT:
+    async def __authorise(self) -> JWT:
         form = {'grant_type': 'password', 'username': 'bbeloff1@me.com', 'password': 'pass'}
-        response = self.__client.post('/session/', data=form)
+        response = await self.__client.post('/session', data=form)
 
         return JWT.construct_from_jdict(json.loads(response.content))
