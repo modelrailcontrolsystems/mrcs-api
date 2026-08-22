@@ -11,10 +11,10 @@ import json
 import unittest
 from pathlib import Path
 
-from fastapi.testclient import TestClient
+import httpx
 
 from mrcs_api.app.main import app
-from mrcs_api.test_setup import TestSetup
+from mrcs_api.test.test_helper import TestHelper
 from mrcs_control.admin.user.persistent_user import PersistentUser
 from mrcs_control.db.db_client import DbClient
 from mrcs_core.security.token import JWT
@@ -22,25 +22,32 @@ from mrcs_core.security.token import JWT
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class TestSessionController(unittest.TestCase):
+class TestSessionController(unittest.IsolatedAsyncioTestCase):
 
     @classmethod
     def setUpClass(cls):
-        TestSetup.dbSetup()
+        TestHelper.dbSetup()
 
 
-    def setUp(self):
+    @classmethod
+    def tearDownClass(cls):
+        TestHelper.dbTeardown()
+
+
+    async def asyncSetUp(self):
         self.__setup_db()
-        self.__client = TestClient(app)
+        self.__transport = httpx.ASGITransport(app=app)
+        self.__client = httpx.AsyncClient(transport=self.__transport, base_url="http://test", follow_redirects=True)
 
 
-    def tearDown(self):
+    async def asyncTearDown(self):
+        await self.__client.aclose()
         DbClient.kill_all()
 
 
-    def test_log_on(self):
+    async def test_log_on(self):
         form = {'grant_type': 'password', 'username': 'bbeloff1@me.com', 'password': 'pass'}
-        response = self.__client.post('/session/', data=form)
+        response = await self.__client.post('/session', data=form)
         assert response.status_code == 201
         token = JWT.construct_from_jdict(json.loads(response.content.decode()))
         assert len(token.access.data) > 100

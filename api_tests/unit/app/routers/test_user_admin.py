@@ -11,10 +11,10 @@ import json
 import unittest
 from pathlib import Path
 
-from fastapi.testclient import TestClient
+import httpx
 
 from mrcs_api.app.main import app
-from mrcs_api.test_setup import TestSetup
+from mrcs_api.test.test_helper import TestHelper
 from mrcs_control.admin.user.persistent_user import PersistentUser
 from mrcs_control.db.db_client import DbClient
 from mrcs_core.admin.user.user import User
@@ -24,32 +24,39 @@ from mrcs_core.security.token import JWT
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class TestUserAdmin(unittest.TestCase):
+class TestUserAdmin(unittest.IsolatedAsyncioTestCase):
 
     @classmethod
     def setUpClass(cls):
-        TestSetup.dbSetup()
+        TestHelper.dbSetup()
 
 
-    def setUp(self):
+    @classmethod
+    def tearDownClass(cls):
+        TestHelper.dbTeardown()
+
+
+    async def asyncSetUp(self):
         self.__setup_db()
-        self.__client = TestClient(app)
+        self.__transport = httpx.ASGITransport(app=app)
+        self.__client = httpx.AsyncClient(transport=self.__transport, base_url="http://test", follow_redirects=True)
 
-        self.token = self.__authorise()
+        self.token = await self.__authorise()
 
 
-    def tearDown(self):
+    async def asyncTearDown(self):
+        await self.__client.aclose()
         DbClient.kill_all()
 
 
-    def test_find_all_fail(self):
-        response = self.__client.get('/user/find_all/')
+    async def test_find_all_fail(self):
+        response = await self.__client.get('/user/find_all/')
         assert response.status_code == 401
 
 
-    def test_find_all(self):
+    async def test_find_all(self):
         headers = self.token.as_header()
-        response = self.__client.get('/user/find_all/', headers=headers)
+        response = await self.__client.get('/user/find_all/', headers=headers)
 
         assert response.status_code == 200
         jdict = response.json()
@@ -59,84 +66,84 @@ class TestUserAdmin(unittest.TestCase):
         assert user.email == 'bbeloff1@me.com'
 
 
-    def test_find_user(self):
+    async def test_find_user(self):
         headers = self.token.as_header()
-        response = self.__client.get('/user/find_all/', headers=headers)
+        response = await self.__client.get('/user/find_all/', headers=headers)
         jdict = response.json()
         user = User.construct_from_jdict(jdict[0])
 
-        response = self.__client.get(f'/user/find/{user.uid}/', headers=headers)
+        response = await self.__client.get(f'/user/find/{user.uid}/', headers=headers)
         assert response.status_code == 200
 
         user = User.construct_from_jdict(response.json())
         assert user.email == 'bbeloff1@me.com'
 
 
-    def test_find_self(self):
+    async def test_find_self(self):
         headers = self.token.as_header()
-        response = self.__client.get(f'/user/self/', headers=headers)
+        response = await self.__client.get(f'/user/self/', headers=headers)
         assert response.status_code == 200
 
         user = User.construct_from_jdict(response.json())
         assert user.email == 'bbeloff1@me.com'
 
 
-    def test_find_404(self):
+    async def test_find_404(self):
         headers = self.token.as_header()
-        response = self.__client.get(f'/user/find/123/', headers=headers)
+        response = await self.__client.get(f'/user/find/123/', headers=headers)
         assert response.status_code == 404
 
 
-    def test_create(self):
+    async def test_create(self):
         user = self.__load_user('admin_user.json')
         jdict = JSONify.as_jdict(user)
         jdict['password'] = 'pass'
         headers = self.token.as_header()
-        response = self.__client.post('/user/create/', headers=headers, json=jdict)
+        response = await self.__client.post('/user/create/', headers=headers, json=jdict)
         assert response.status_code == 201
 
         created = User.construct_from_jdict(response.json())
         assert created.created is not None
 
-        response = self.__client.delete(f'/user/delete/{created.uid}/', headers=headers)
+        response = await self.__client.delete(f'/user/delete/{created.uid}/', headers=headers)
         assert response.status_code == 200
 
 
-    def test_create_clash(self):
+    async def test_create_clash(self):
         user = self.__load_user('new_user1.json')
         jdict = JSONify.as_jdict(user)
         jdict['password'] = 'pass'
         headers = self.token.as_header()
-        response = self.__client.post('/user/create/', headers=headers, json=jdict)
+        response = await self.__client.post('/user/create/', headers=headers, json=jdict)
         assert response.status_code == 409
 
 
-    def test_create_bad_email(self):
+    async def test_create_bad_email(self):
         user = self.__load_user('new_user1.json')
         jdict = JSONify.as_jdict(user)
         jdict['email'] = 'JUNK'
         jdict['password'] = 'pass'
         headers = self.token.as_header()
-        response = self.__client.post('/user/create/', headers=headers, json=jdict)
+        response = await self.__client.post('/user/create/', headers=headers, json=jdict)
         assert response.status_code == 400
 
 
-    def test_create_bad_role(self):
+    async def test_create_bad_role(self):
         user = self.__load_user('new_user1.json')
         jdict = JSONify.as_jdict(user)
         jdict['role'] = 'JUNK'
         jdict['password'] = 'pass'
         headers = self.token.as_header()
-        response = self.__client.post('/user/create/', headers=headers, json=jdict)
+        response = await self.__client.post('/user/create/', headers=headers, json=jdict)
         assert response.status_code == 400
 
 
-    def test_update(self):
+    async def test_update(self):
         user = self.__load_user('admin_user.json')
         jdict = JSONify.as_jdict(user)
         jdict['password'] = 'pass'
         headers = self.token.as_header()
-        response = self.__client.post('/user/create/', headers=headers, json=jdict)
+        response = await self.__client.post('/user/create/', headers=headers, json=jdict)
         assert response.status_code == 201
 
         created = User.construct_from_jdict(response.json())
@@ -144,10 +151,10 @@ class TestUserAdmin(unittest.TestCase):
 
         jdict = JSONify.as_jdict(created)
 
-        response = self.__client.patch(f'/user/update/', headers=headers, json=jdict)
+        response = await self.__client.patch(f'/user/update/', headers=headers, json=jdict)
         assert response.status_code == 200
 
-        response = self.__client.delete(f'/user/delete/{created.uid}/', headers=headers)
+        response = await self.__client.delete(f'/user/delete/{created.uid}/', headers=headers)
         assert response.status_code == 200
 
 
@@ -183,8 +190,8 @@ class TestUserAdmin(unittest.TestCase):
         return obj1, obj2
 
 
-    def __authorise(self) -> JWT:
+    async def __authorise(self) -> JWT:
         form = {'grant_type': 'password', 'username': 'bbeloff1@me.com', 'password': 'pass'}
-        response = self.__client.post('/session/', data=form)
+        response = await self.__client.post('/session', data=form)
 
         return JWT.construct_from_jdict(json.loads(response.content))

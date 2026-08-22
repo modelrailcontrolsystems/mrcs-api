@@ -13,7 +13,7 @@ from pathlib import Path
 
 from mrcs_api.models.user import APIUser
 from mrcs_api.security.token import APIJWT
-from mrcs_control.db.db_client import DbClient
+from mrcs_api.test.test_helper import TestHelper
 from mrcs_core.security.token import TokenData
 
 
@@ -21,8 +21,14 @@ from mrcs_core.security.token import TokenData
 
 class TestToken(unittest.TestCase):
 
-    def tearDown(self):
-        DbClient.kill_all()
+    @classmethod
+    def setUpClass(cls):
+        TestHelper.dbSetup()
+
+
+    @classmethod
+    def tearDownClass(cls):
+        TestHelper.dbTeardown()
 
 
     def test_construct(self):
