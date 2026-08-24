@@ -16,6 +16,7 @@ https://en.wikipedia.org/wiki/URL
 
 from collections import OrderedDict
 from datetime import timedelta
+from typing import Self
 
 from mrcs_core.data.json import PersistentJSONable
 
@@ -31,6 +32,7 @@ class TokenTimeout(PersistentJSONable):
 
     __FILENAME = "token_timeout.json"
 
+
     @classmethod
     def persistence_location(cls):
         return cls.conf_dir(), cls.__FILENAME
@@ -39,7 +41,7 @@ class TokenTimeout(PersistentJSONable):
     # ----------------------------------------------------------------------------------------------------------------
 
     @classmethod
-    def construct_from_jdict(cls, jdict):
+    def construct_from_jdict(cls, jdict) -> Self:
         if not jdict:
             return cls(0, cls.__DEFAULT_EXPIRE_MINUTES)
 

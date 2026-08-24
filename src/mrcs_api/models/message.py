@@ -6,7 +6,7 @@ Created on 3 Dec 2025
 A structured representation of a message - received via the API
 """
 
-from typing import Dict
+from typing import Dict, Self
 
 from pydantic import BaseModel
 
@@ -32,7 +32,7 @@ class MessageRecordModel(BaseModel):
 class APIMessage(Message):
     """A structured representation of a message"""
 
-    @classmethod
-    def construct_from_payload(cls, payload: MessageModel):
-        return cls.construct_from_jdict(payload.model_dump())
 
+    @classmethod
+    def construct_from_payload(cls, payload: MessageModel) -> Self:
+        return cls.construct_from_jdict(payload.model_dump())

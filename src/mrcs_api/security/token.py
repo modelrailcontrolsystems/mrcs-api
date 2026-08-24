@@ -9,6 +9,7 @@ https://fastapi.tiangolo.com/advanced/security/oauth2-scopes/#verify-the-scopes
 """
 
 from datetime import datetime, timedelta, timezone
+from typing import Self
 
 import jwt
 
@@ -28,7 +29,7 @@ class APIJWT(JWT):
     # ----------------------------------------------------------------------------------------------------------------
 
     @classmethod
-    def construct(cls, user: APIUser, expires_delta: timedelta):
+    def construct(cls, user: APIUser, expires_delta: timedelta) -> Self:
         if not user.uid:
             raise ValueError('the user must have a valid uid')
 
