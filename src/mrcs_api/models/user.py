@@ -5,13 +5,12 @@ Created on 6 Dec 2025
 
 A structured representation of a user - received via the API
 """
+from typing import Self
 
 from pydantic import BaseModel, ConfigDict
 
 from mrcs_api.security.scope import Scope
-
 from mrcs_control.admin.user.persistent_user import PersistentUser
-
 from mrcs_core.admin.user.user import UserRole
 from mrcs_core.data.iso_datetime import ISODatetime
 
@@ -57,12 +56,12 @@ class UserUpdateModel(BaseModel):
 class APIUser(PersistentUser):
 
     @classmethod
-    def construct_from_create_payload(cls, payload: UserCreateModel):
+    def construct_from_create_payload(cls, payload: UserCreateModel) -> Self:
         return cls.construct_from_jdict(payload.model_dump())
 
 
     @classmethod
-    def construct_from_update_payload(cls, payload: UserUpdateModel):
+    def construct_from_update_payload(cls, payload: UserUpdateModel) -> Self:
         return cls.construct_from_jdict(payload.model_dump())
 
 

@@ -6,7 +6,7 @@ Created on 10 Jan 2026
 A messaging node that subscribes to, and can publish, clock configurations
 """
 
-from typing import Callable
+from collections.abc import Callable
 
 from mrcs_control.messaging.mq_topology import MQTopology
 from mrcs_control.operations.async_messaging_node import AsyncSubscriberNode
