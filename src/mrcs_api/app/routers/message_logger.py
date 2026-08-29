@@ -26,7 +26,7 @@ from mrcs_core.sys.logging import Logging
 # --------------------------------------------------------------------------------------------------------------------
 
 env = Environment.get()
-print(f'env:{env}')
+
 Logging.config(env.log_name + ': message_logger', level=env.log_level)
 logger = Logging.getLogger()
 
