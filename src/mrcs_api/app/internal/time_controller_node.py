@@ -45,7 +45,7 @@ class TimeControllerNode(AsyncSubscriberNode):
     # ----------------------------------------------------------------------------------------------------------------
 
     def __init__(self, ops: NodeTopology.ServiceConfiguration, client_handler: Callable):
-        super().__init__(ops, MQTopology.SINGLE)
+        super().__init__(ops, MQTopology.SINGLE_PROCESS)
 
         self.__client_handler = client_handler
 
