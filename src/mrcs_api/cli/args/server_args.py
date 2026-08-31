@@ -18,7 +18,8 @@ class ServerArgs(ControlArgs):
     def __init__(self, description):
         super().__init__(description)
 
-        self._parser.add_argument('-s', '--set', action='store', nargs=3, help='set HOST PORT IS_SECURE')
+        self._parser.add_argument('-s', '--set', action='store', nargs=3, metavar=('HOST', 'PORT', 'IS_SECURE'),
+                                  help='set HOST PORT IS_SECURE')
 
         self._args = self._parser.parse_args()
 

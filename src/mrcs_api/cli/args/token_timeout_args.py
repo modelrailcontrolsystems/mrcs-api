@@ -14,10 +14,12 @@ from mrcs_control.cli.args.control_args import ControlArgs
 class TokenTimeoutArgs(ControlArgs):
     """unix command line handler"""
 
+
     def __init__(self, description):
         super().__init__(description)
 
-        self._parser.add_argument('-s', '--set', action='store', type=int, nargs=2, help='set HOURS MINUTES')
+        self._parser.add_argument('-s', '--set', action='store', type=int, nargs=2, metavar=('HOURS', 'MINUTES'),
+                                  help='set HOURS MINUTES')
 
         self._args = self._parser.parse_args()
 
