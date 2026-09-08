@@ -6,12 +6,12 @@ Created on 4 Jan 2026
 https://realpython.com/command-line-interfaces-python-argparse/
 """
 
-from mrcs_control.cli.args.control_args import ControlArgs
+from mrcs_core.cli.args.common_args import CommonArgs
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class TokenTimeoutArgs(ControlArgs):
+class TokenTimeoutArgs(CommonArgs):
     """unix command line handler"""
 
 

@@ -6,12 +6,12 @@ Created on 30 Nov 2025
 https://realpython.com/command-line-interfaces-python-argparse/
 """
 
-from mrcs_control.cli.args.multimode_control_args import MultimodeControlArgs
+from mrcs_core.cli.args.multimode_args import MultimodeArgs
 
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class UvicornArgs(MultimodeControlArgs):
+class UvicornArgs(MultimodeArgs):
     """unix command line handler"""
 
 
