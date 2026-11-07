@@ -65,6 +65,8 @@ logger.info(f'hostname:{hostname}')
 async def lifespan(_: FastAPI):
     logger.info('lifespan: part1 - start')
 
+    publish_tool.publisher.connect()
+
     time_controller_node.connect()
     await time_controller_node.connection_is_available()
 
@@ -72,6 +74,9 @@ async def lifespan(_: FastAPI):
     yield
 
     logger.info('lifespan: part2')
+
+    await time_controller_node.mq_client.close_and_wait()
+    publish_tool.publisher.close()
 
 
 # --------------------------------------------------------------------------------------------------------------------
