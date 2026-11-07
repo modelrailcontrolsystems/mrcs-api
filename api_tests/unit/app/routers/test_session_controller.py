@@ -35,6 +35,7 @@ class TestSessionController(unittest.IsolatedAsyncioTestCase):
 
 
     async def asyncSetUp(self):
+        self.__lifespan = await TestHelper.lifespanSetup(app)
         self.__setup_db()
         self.__transport = httpx.ASGITransport(app=app)
         self.__client = httpx.AsyncClient(transport=self.__transport, base_url="http://test", follow_redirects=True)
@@ -42,6 +43,7 @@ class TestSessionController(unittest.IsolatedAsyncioTestCase):
 
     async def asyncTearDown(self):
         await self.__client.aclose()
+        await TestHelper.lifespanTeardown(self.__lifespan)
         DbClient.kill_all()
 
 

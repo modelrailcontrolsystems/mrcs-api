@@ -26,7 +26,6 @@ from mrcs_core.operations.time.clock import Clock
 from mrcs_core.operations.time.clock_iso_datetime import ClockISODatetime
 from mrcs_core.sys.host import Host
 from mrcs_core.sys.logging import Logging
-from mrcs_core.sys.stdio import StdIO
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -35,10 +34,7 @@ def handler(message: Message):
     logger.info(f'handler - message:{JSONify.as_jdict(message)}')
 
     loop = asyncio.get_event_loop()
-    task = loop.create_task(ws_manager.broadcast(message.body))
-
-    with StdIO.suppress_stdout_stderr():
-        asyncio.wait(task)
+    loop.create_task(ws_manager.broadcast(message.body))
 
 
 # --------------------------------------------------------------------------------------------------------------------
