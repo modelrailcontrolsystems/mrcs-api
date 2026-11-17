@@ -11,7 +11,7 @@ from mrcs_core.cli.args.multimode_args import MultimodeArgs
 
 # --------------------------------------------------------------------------------------------------------------------
 
-class UvicornArgs(MultimodeArgs):
+class UvicornServiceArgs(MultimodeArgs):
     """unix command line handler"""
 
 
@@ -40,5 +40,5 @@ class UvicornArgs(MultimodeArgs):
     # ----------------------------------------------------------------------------------------------------------------
 
     def __str__(self, *args, **kwargs):
-        return (f'UvicornArgs:{{test:{self.test}, port:{self.port}, reload:{self.reload}, '
+        return (f'UvicornServiceArgs:{{test:{self.test}, port:{self.port}, reload:{self.reload}, '
                 f'indent:{self.indent}, verbose:{self.verbose}}}')
