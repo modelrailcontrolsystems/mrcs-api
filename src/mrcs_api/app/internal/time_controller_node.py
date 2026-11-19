@@ -29,7 +29,7 @@ class TimeControllerNode(AsyncSubscriberNode):
 
 
     @classmethod
-    def id(cls):
+    def id(cls) -> EquipmentIdentifier:
         return EquipmentIdentifier(EquipmentType.API, None, 1)
 
 
