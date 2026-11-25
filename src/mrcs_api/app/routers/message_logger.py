@@ -10,8 +10,6 @@ http://127.0.0.1:8000/mlg/latest
 https://fastapi.tiangolo.com/tutorial/bigger-applications/#an-example-file-structure
 """
 
-from typing import List
-
 from fastapi import APIRouter
 
 from mrcs_api.app.internal.tags import Tags
@@ -40,7 +38,7 @@ recorder_node = MessageRecorderNode(env.queuing.value)
 # --------------------------------------------------------------------------------------------------------------------
 
 @router.get('/latest')
-async def latest_messages(user: AuthorisedObserver, limit: int = 10) -> List[MessageRecordModel]:
+async def latest_messages(user: AuthorisedObserver, limit: int = 10) -> list[MessageRecordModel]:
     logger.info(f'latest_messages - user:{user.uid} limit:{limit}')
     records = list(recorder_node.find_latest(limit))
 
