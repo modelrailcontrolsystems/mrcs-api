@@ -11,8 +11,6 @@ http://127.0.0.1:8000/user/find_all
 http://127.0.0.1:8000/user/find/def49452-afe0-456a-beac-399c66eb7e95
 """
 
-from typing import List
-
 from fastapi import APIRouter, status
 
 from mrcs_api.app.internal.tags import Tags
@@ -40,7 +38,7 @@ router = APIRouter(prefix='/user', tags=[Tags.Users])
 # --------------------------------------------------------------------------------------------------------------------
 
 @router.get('/find_all')
-async def find_all(user: AuthorisedAdmin) -> List[UserModel]:
+async def find_all(user: AuthorisedAdmin) -> list[UserModel]:
     logger.info(f'find_all - user:{user.uid}')
     users = list(PersistentUser.find_all())
 

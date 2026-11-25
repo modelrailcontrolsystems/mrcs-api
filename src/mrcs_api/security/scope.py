@@ -61,7 +61,7 @@ class Scope(StrEnum, metaclass=MetaEnum):
     @classmethod
     def keys_for_role(cls, role: UserRole) -> Set['Scope']:
         try:
-            return cls.__ROLE_MAPPING[role]
+            return {cls(scope) for scope in cls.__ROLE_MAPPING[role]}
         except KeyError:
             return set()
 

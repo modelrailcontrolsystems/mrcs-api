@@ -7,7 +7,7 @@ A structured representation of a user - received via the API
 """
 from typing import Self
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 from mrcs_api.security.scope import Scope
 from mrcs_control.admin.user.persistent_user import PersistentUser
@@ -17,9 +17,7 @@ from mrcs_core.data.iso_datetime import ISODatetime
 
 # ----------------------------------------------------------------------------------------------------------------
 
-class UserModel(BaseModel):
-    model_config = ConfigDict(extra='allow')
-
+class UserModel(BaseModel, extra='allow'):
     uid: str
     email: str
     role: str
@@ -30,9 +28,7 @@ class UserModel(BaseModel):
     latest_login: str | None
 
 
-class UserCreateModel(BaseModel):
-    model_config = ConfigDict(extra='allow')
-
+class UserCreateModel(BaseModel, extra='allow'):
     email: str
     password: str
     role: str
@@ -41,9 +37,7 @@ class UserCreateModel(BaseModel):
     family_name: str
 
 
-class UserUpdateModel(BaseModel):
-    model_config = ConfigDict(extra='allow')
-
+class UserUpdateModel(BaseModel, extra='allow'):
     uid: str
     email: str
     role: str
